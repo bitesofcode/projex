@@ -114,6 +114,7 @@ class Builder(object):
         opts = {}
         opts['excludeBinaries'] = 1
         opts['debug'] = False
+        opts['console'] = False
         opts['strip'] = None
         opts['logo'] = projex.resources.find('img/logo.ico')
         opts['upx'] = True
@@ -127,6 +128,7 @@ class Builder(object):
         self._executableData = []
         self._executableExcludes = []
         self._executableName = ''
+        self._executableCliName = ''
         self._executablePath = ''
         self._productName = ''
         self._executableOptions = opts
@@ -379,6 +381,14 @@ class Builder(object):
         else:
             return self.name()
 
+    def executableCliName(self):
+        """
+        Returns the name for the executable this builder will generate.
+        
+        :return     <str>
+        """
+        return self._executableCliName
+
     def executablePath(self):
         """
         Returns the default executable path for this builder.
@@ -466,6 +476,7 @@ class Builder(object):
         
         # generate the specfile if necessary
         specfile = self.specfile()
+        
         if not specfile:
             # generate the spec file options
             opts = {}
@@ -494,6 +505,12 @@ class Builder(object):
             opts['datasets'] = '\n'.join(datasets)
             
             opts.update(self._executableOptions)
+            
+            if self.executableCliName():
+                opts['cliname'] = self.executableCliName()
+                opts['collect'] = templ.SPECFILE_CLI.format(**opts)
+            else:
+                opts['collect'] = templ.SPECFILE_COLLECT
             
             if opts['onefile']:
                 data = templ.SPECFILE_ONEFILE.format(**opts)
@@ -940,6 +957,7 @@ class Builder(object):
         if xexe is not None:
             exe_tags = {'runtime':'_runtime',
                         'exe': '_executableName',
+                        'cli': '_executableCliName',
                         'product': '_productName'}
             
             for tag, prop in exe_tags.items():
@@ -1080,6 +1098,7 @@ class Builder(object):
         if yexe is not None:
             exe_tags = {'runtime':'_runtime',
                         'exe': '_executableName',
+                        'cli': '_executableCliName',
                         'product': '_productName'}
             
             for tag, prop in exe_tags.items():
@@ -1338,6 +1357,15 @@ class Builder(object):
         :param      name | <str>
         """
         self._executableName = name
+
+    def setExecutableCliName(self, name):
+        """
+        Sets the name for the executable for this builder to the
+        given name.
+        
+        :param      name | <str>
+        """
+        self._executableCliName = name
 
     def setExecutablePath(self, path):
         """

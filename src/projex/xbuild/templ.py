@@ -309,6 +309,40 @@ SPECTREE = """\
 dataset += Tree(r'{path}', prefix='{prefix}', excludes=[{excludes}])
 """
 
+SPECFILE_CLI = """\
+cli = EXE(pyz,
+          results.scripts,
+          exclude_binaries={excludeBinaries},
+          name=os.path.join(os.path.join(r'build',
+                                         r'pyi.{platform}',
+                                         r'{cliname}',
+                                         r'{cliname}.exe')),
+          debug={debug},
+          strip={strip},
+          icon=r'{logo}',
+          upx={upx},
+          console=True)
+
+coll = COLLECT(exe,
+               cli,
+               results.binaries,
+               results.zipfiles,
+               dataset,
+               strip={strip},
+               upx={upx},
+               name=os.path.join(r'{distpath}', r'{exname}'))
+"""
+
+SPECFILE_COLLECT = """\
+coll = COLLECT(exe,
+               results.binaries,
+               results.zipfiles,
+               dataset,
+               strip={strip},
+               upx={upx},
+               name=os.path.join(r'{distpath}', r'{exname}'))
+"""
+
 SPECFILE = """\
 # -*- mode: python -*-
 import logging
@@ -346,15 +380,9 @@ exe = EXE(pyz,
           strip={strip},
           icon=r'{logo}',
           upx={upx},
-          console={debug})
+          console={console})
 
-coll = COLLECT(exe,
-               results.binaries,
-               results.zipfiles,
-               dataset,
-               strip={strip},
-               upx={upx},
-               name=os.path.join(r'{distpath}', r'{exname}'))
+{collect}
 """
 
 SPECFILE_ONEFILE = """\
@@ -396,7 +424,7 @@ exe = EXE(pyz,
           strip={strip},
           icon=r'{logo}',
           upx={upx},
-          console={debug})
+          console={console})
 
 coll = COLLECT(exe,
                dataset,
