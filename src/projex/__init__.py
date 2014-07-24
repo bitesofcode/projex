@@ -19,13 +19,9 @@ __email__           = 'team@projexsoftware.com'
 
 # define version information (major,minor,maintanence)
 __depends__ = []
-__major__   = 2
-__minor__   = 1
-
-try:
-    from __revision__ import __revision__
-except:
-    __revision__ = 0
+__major__   = 3
+__minor__   = 0
+__revision__ = 0
 
 __version_info__   = (__major__, __minor__, __revision__)
 __version__        = '%s.%s' % (__major__, __minor__)

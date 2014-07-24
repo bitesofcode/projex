@@ -1,1 +1,5 @@
 *.pyc
+/.build
+/src/build
+/src/dist
+/src/projex.egg-info

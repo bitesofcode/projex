@@ -19,6 +19,7 @@ import shutil
 import subprocess
 import shlex
 import sys
+import time
 import zipfile
 
 try:
@@ -51,15 +52,19 @@ def cmdexec(cmd):
                             stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE,
                             shell=True)
-    info, err = proc.communicate()
+    
     result = proc.poll()
+    while result is None:
+        info, err = proc.communicate()
+        
+        if info:
+            log.info(info)
+        if err:
+            log.error(err)
+        
+        result = proc.poll()
     
-    if info:
-        log.info(info)
-    if err:
-        log.error(err)
-    
-    return proc.poll()
+    return result
 
 def _mkpath(filepath, text, **opts):
     path = text.format(**opts)
@@ -185,7 +190,7 @@ class Builder(object):
         """
         Builds this object into the desired output information.
         """
-        signed = self.options() & Builder.Options.Signed
+        signed = bool(self.options() & Builder.Options.Signed)
         
         # remove previous build information
         buildpath = self.buildPath()
@@ -503,7 +508,7 @@ class Builder(object):
         
         cmd = os.path.expandvars(self.executableOption('cmd'))
         success = cmdexec(cmd.format(spec=specfile)) == 0
-        if success and signed:
+        if signed:
             binfile = os.path.join(opts['distpath'],
                                    opts['product'],
                                    opts['exname'] + '.exe')
@@ -598,16 +603,13 @@ class Builder(object):
             basetempl = templ.NSISLIB
         
         # sign the uninstaller
-        if signed:
-            sign = self.signcmd()
-            certificate = self.certificate()
-            if sign and certificate:
-                cmd = sign.format(filename='', cert=certificate)
-                cmd = os.path.expandvars(cmd)
-                cmd = cmd.replace('""', '')
-                
-                opts['signed'] = '!define SIGNED'
-                opts['signcmd'] = cmd
+        if signed and self.signcmd():
+            cmd = self.signcmd().format(filename='', cert=self.certificate())
+            cmd = os.path.expandvars(cmd)
+            cmd = cmd.replace('""', '')
+            
+            opts['signed'] = '!define SIGNED'
+            opts['signcmd'] = cmd
         
         opts.update(self._installerOptions)
         
@@ -648,7 +650,7 @@ class Builder(object):
         
         # run the installer
         cmd = os.path.expandvars(self.installerOption('cmd'))
-        cmdexec(cmd.format(script=outfile))
+        success = cmdexec(cmd.format(script=outfile))
         
         # sign the installer
         if signed:
@@ -1547,12 +1549,20 @@ class Builder(object):
         """
         sign = self.signcmd()
         certificate = self.certificate()
-        if not (sign and certificate):
-            return
+        if not sign:
+            log.error('No signcmd defined.')
+            return False
+        elif not certificate and '{cert}' in sign:
+            log.error('No sign certificated defined.')
+            return False
         
+        log.info('Signing {0}...'.format(filename))
         sign = os.path.expandvars(sign)
         filename = os.path.expandvars(filename)
         cert = os.path.expandvars(certificate)
+        
+        # let the previous process finish fully, or we might get some file errors
+        time.sleep(2)
         return cmdexec(sign.format(filename=filename, cert=cert)) == 0
 
     def specfile(self):

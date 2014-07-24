@@ -157,6 +157,9 @@ class enum(dict):
         
         :return     <str>
         """
+        if value is None:
+            return ''
+        
         keys = []
         for key, check in sorted(self.items(), key=lambda x: x[1]):
             if value & check:
