@@ -309,6 +309,10 @@ SPECTREE = """\
 dataset += Tree(r'{path}', prefix='{prefix}', excludes=[{excludes}])
 """
 
+SPECDATA = """\
+dataset += [(r'{name}', r'{path}', r'{type}')]
+"""
+
 SPECFILE_CLI = """\
 cli = EXE(pyz,
           results.scripts,

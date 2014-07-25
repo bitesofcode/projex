@@ -502,6 +502,12 @@ class Builder(object):
                     
                     datasets.append(templ.SPECTREE.format(**args))
             
+                else:
+                    args = {}
+                    args.update(data)
+                    args.setdefault('type', typ)
+                    datasets.append(templ.SPECDATA.format(**args))
+            
             opts['datasets'] = '\n'.join(datasets)
             
             opts.update(self._executableOptions)
@@ -994,6 +1000,9 @@ class Builder(object):
                         
                         if excludes:
                             data.append(('tree', (path, prefix, excludes)))
+                    else:
+                        for xitem in xentry:
+                            data.append((xentry.tag, xitem.attrs))
                 
                 self.setExecutableData(data)
             
@@ -1116,7 +1125,7 @@ class Builder(object):
             yexedata = yexe.get('data', {})
             if yexedata:
                 data = []
-                for key, value in yexedata:
+                for key, value in yexedata.items():
                     if key == 'tree':
                         path = value.get('path', '')
                         if path:
@@ -1129,6 +1138,10 @@ class Builder(object):
                         
                         if excludes:
                             data.append(('tree', (path, prefix, excludes)))
+                    
+                    else:
+                        for item in value:
+                            data.append((key, item))
                 
                 self.setExecutableData(data)
             
