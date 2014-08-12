@@ -95,3 +95,7 @@ class LazyModule(object):
                 
                 self.__dict__['__module_inst__'] = mod
                 return mod
+
+# define a more Pep8 friendly caller
+lazy_import = LazyModule
+
