@@ -116,6 +116,8 @@ def py2json(py_obj):
         return py_obj.strftime('%Y-%m-%d')
     elif type(py_obj) == datetime.time:
         return py_obj.strftime('%H:%M:%S:%f')
+    elif type(py_obj) == set:
+        return list(py_obj)
     else:
         # look through custom plugins
         for encoder in _encoders:
