@@ -17,3 +17,4 @@ import os
 import projex.pyi
 
 hiddenimports, datas = projex.pyi.collect(os.path.dirname(__file__))
+hiddenimports.append('smtplib')
