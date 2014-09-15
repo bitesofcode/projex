@@ -558,7 +558,7 @@ class Builder(object):
         except WindowsError:
             try:
                 args = ['git', 'rev-parse', 'HEAD', revpath]
-                proc = subprcoess.Popen(args, stdout=subprocess.PIPE)
+                proc = subprocess.Popen(args, stdout=subprocess.PIPE)
                 mode = 'git'
             except WindowsError:
                 return
@@ -572,8 +572,6 @@ class Builder(object):
                 if data:
                     rev = int(data.group(1))
                     break
-        elif mode == 'git':
-            rev = '"' + proc.stdout.read().strip() + '"'
         
         if rev is not None:
             try:

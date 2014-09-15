@@ -866,7 +866,7 @@ def render(plain,
         if results:
             level, linetext = results.groups()
             level_count = len(level)
-            level_type  = 'unordered' if level[-1] != '*' else 'ordered'
+            level_type  = 'unordered' if level[-1] == '*' else 'ordered'
             
             while level_count > len(list_stack):
                 html.append(__style[level_type + '_list_open'])
