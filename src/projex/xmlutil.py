@@ -19,6 +19,117 @@ from .addon import AddonManager
 from .decorators import abstractmethod
 from .text import nativestring
 
+class XmlObject(AddonManager):
+    def __init__(self):
+        super(XmlObject, self).__init__()
+
+        # define the custom properties
+        self._xmlData = {}
+
+    def allXmlData(self):
+        """
+        Returns a dictionary of the properties that are loaded and saved to the XML file for this object.
+
+        :return     {<str> name: <variant> value, ..}
+        """
+        return self._xmlData
+
+    def loadXml(self, xml):
+        """
+        Loads the data for this object from XML.
+
+        :param      xml | <xml.etree.ElementTree.Element> || None
+        """
+        if xml is not None:
+            for xprop in xml:
+                self.loadXmlProperty(xprop)
+
+    def loadXmlProperty(self, xprop):
+        """
+        Loads an XML property that is a child of the root data being loaded.
+
+        :param      xprop | <xml.etree.ElementTree.Element>
+        """
+        if xprop.tag == 'property':
+            value = self.dataInterface().fromXml(xprop[0])
+            self._xmlData[xprop.get('name', '')] = value
+
+    def setXmlData(self, name, value):
+        """
+        Sets the property for this XML object to the inputed name and value.
+
+        :param      name  | <str>
+                    value | <variant>
+        """
+        self._xmlData[name] = value
+
+    def toXml(self, xparent=None):
+        """
+        Converts this object to XML.
+
+        :param      xparent | <xml.etree.ElementTree.Element> || None
+
+        :return     <xml.etree.ElementTree.Element>
+        """
+        if xparent is None:
+            xml = ElementTree.Element('object')
+        else:
+            xml = ElementTree.SubElement(xparent, 'object')
+
+        xml.set('class', self.__class__.__name__)
+        for name, value in self._xmlData.items():
+            xprop = ElementTree.SubElement(xml, 'property')
+            xprop.set('name', name)
+            XmlDataIO.toXml(value, xprop)
+        return xml
+
+    def xmlData(self, name, default=None):
+        """
+        Returns the XML property that was created for this object.
+
+        :return     <variant>
+        """
+        return self._xmlData.get(name, default)
+
+    @classmethod
+    def fromXml(cls, xml):
+        """
+        Restores an object from XML.
+
+        :param      xml | <xml.etree.ElementTree.Element>
+
+        :return     subclass of <XmlObject>
+        """
+        clsname = xml.get('class')
+        if clsname:
+            subcls = XmlObject.byName(clsname)
+            if subcls is None:
+                inst = MissingXmlObject(clsname)
+            else:
+                inst = subcls()
+        else:
+            inst = cls()
+
+        inst.loadXml(xml)
+        return inst
+
+    @staticmethod
+    def dataInterface():
+        """
+        Returns the XmlDataIO interface associated with this XmlObject class.
+
+        :return     subclass of <XmlDataIO>
+        """
+        return XmlDataIO
+
+class MissingXmlObject(XmlObject):
+    def __init__(self, missingType):
+        super(MissingXmlObject, self).__init__()
+
+        self.setXmlData('missingType', missingType)
+
+#----------------------------------------------------------------------
+
 class XmlDataIO(AddonManager):
     @abstractmethod('XmlDataIO', 'No load method defined.')
     def load(self, elem):
@@ -91,8 +202,13 @@ class XmlDataIO(AddonManager):
         """
         if data is None:
             return None
-        
-        name = type(data).__name__
+
+        # store XmlObjects seperately from base types
+        if isinstance(data, XmlObject):
+            name = 'object'
+        else:
+            name = type(data).__name__
+
         addon = cls.byName(name)
         if not addon:
             raise RuntimeError, '{0} is not a supported XML tag'.format(name)
@@ -289,6 +405,32 @@ XmlDataIO.registerAddon('list', ListIO())
 
 # O
 #----------------------------------------------------------------------
+
+class ObjectIO(XmlDataIO):
+    def load(self, elem):
+        """
+        Converts the inputed object to Python.  This object class must have the fromXml method defined
+        for this to work.
+
+        :param      elem | <xml.etree.ElementTree>
+
+        :return     <object>
+        """
+        self.testTag(elem, 'object')
+        return XmlObject.fromXml(elem)
+
+    def save(self, data, xparent=None):
+        """
+        Parses the element from XML to Python.
+
+        :param      data    | <variant>
+                    xparent | <xml.etree.ElementTree.Element> || None
+
+        :return     <xml.etree.ElementTree.Element>
+        """
+        return data.toXml(xparent)
+
+XmlDataIO.registerAddon('object', ObjectIO())
 
 class OrderedDictIO(XmlDataIO):
     def load(self, elem):
