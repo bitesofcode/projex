@@ -83,8 +83,14 @@ RequestExecutionLevel admin
 
 !insertmacro MUI_LANGUAGE '{language}'
 
+; pre section plugins
+{pre_section_plugins}
+
 ; include the customized install and uninstall files
 Section 'Install'
+    ; install plugins
+    {install_plugins}
+
     {install}
     
     ; register the product
@@ -97,6 +103,9 @@ Section 'Install'
 SectionEnd
 
 Section 'Uninstall'
+    ; uninstall section plugins
+    {uninstall_plugins}
+
     ; call the uninstaller
     RMDir /r '$INSTDIR'
     Delete '$DESKTOP\\{product}.lnk'
@@ -106,6 +115,9 @@ Section 'Uninstall'
     DeleteRegKey HKLM 'SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{company}\\{product}'
 
 SectionEnd
+
+; post section plugins
+{post_section_plugins}
 """
 
 NSISAPP = r"""\
@@ -202,13 +214,19 @@ Function CreateDesktopIcon
     CreateShortCut '$DESKTOP\{product}.lnk' '$INSTDIR\{product}\{exname}.exe'
 FunctionEnd
 
+; pre section plugins
+{pre_section_plugins}
+
 ; include the customized install and uninstall files
 Section 'Install'
     SetShellVarContext all
-    
+
     ; install the product
     SetOutPath '$INSTDIR\{product}'
-    
+
+    ; install section plugins
+    {install_plugins}
+
     ; install application code
     File /nonfatal /r /x .svn /x *.pyc {compilepath}\*
     
@@ -239,7 +257,10 @@ SectionEnd
 !ifdef INNER
 Section 'Uninstall'
     SetShellVarContext all
-    
+
+    ; uninstall section plugins
+    {uninstall_plugins}
+
     ; call the uninstaller
     Delete '$INSTDIR\uninstall-{exname}.exe'
     RMDir /r '$INSTDIR'
@@ -262,6 +283,9 @@ Section 'Uninstall'
     
 SectionEnd
 !endif
+
+; post section plugins
+{post_section_plugins}
 """
 
 SETUPFILE = """\

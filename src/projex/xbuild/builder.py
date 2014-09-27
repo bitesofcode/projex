@@ -588,7 +588,7 @@ class Builder(object):
         :param      outpath | <str>
         """
         log.info('Generating Installer....')
-        
+
         # generate the options for the installer
         opts = {}
         opts['name'] = self.name()
@@ -607,7 +607,7 @@ class Builder(object):
         opts['nsis_exe'] = os.environ['NSIS_EXE']
         opts['signed'] = ''
         opts['signcmd'] = ''
-        
+
         basetempl = ''
         if self.runtime() and os.path.exists(self.distributionPath()):
             opts['compilepath'] = os.path.join(self.distributionPath(), self.executableName())
@@ -633,7 +633,34 @@ class Builder(object):
             opts['signcmd'] = cmd
         
         opts.update(self._installerOptions)
-        
+
+        # expand the plugin paths
+        pre_section_plugins = []
+        post_section_plugins = []
+        install_plugins = []
+        uninstall_plugins = []
+
+        for filename in self.installerOption('pre_section_plugins', []):
+            with open(filename, 'r') as f:
+                pre_section_plugins.append(f.read().format(**opts))
+
+        for filename in self.installerOption('post_section_plugins', []):
+            with open(filename, 'r') as f:
+                post_section_plugins.append(f.read().format(**opts))
+
+        for filename in self.installerOption('install_section_plugins', []):
+            with open(filename, 'r') as f:
+                install_plugins.append(f.read().format(**opts))
+
+        for filename in self.installerOption('uninstall_section_plugins', []):
+            with open(filename, 'r') as f:
+                uninstall_plugins.append(f.read().formst(**opts))
+
+        opts['install_plugins'] = '\n'.join(install_plugins)
+        opts['uninstall_plugins'] = '\n'.join(uninstall_plugins)
+        opts['pre_section_plugins'] = '\n'.join(pre_section_plugins)
+        opts['post_section_plugins'] = '\n'.join(post_section_plugins)
+
         req_license = self._installerOptions.pop('require_license_approval', False)
         if req_license:
             opts['require_license_approval'] = templ.NSISLICENSERADIO
