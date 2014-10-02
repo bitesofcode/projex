@@ -24,10 +24,10 @@ __IMPORTED = set()
 import importlib
 import logging
 import os
-import pkgutil
 import traceback
-import shlex
 import sys
+
+from .text import nativestring as nstr
 
 # initialize the main projex logger class
 logger = logging.getLogger(__name__)
@@ -295,7 +295,7 @@ def packageRootPath(path):
     
     :return     <str>
     """
-    path = str(path)
+    path = nstr(path)
     if os.path.isfile(path):
         path = os.path.dirname(path)
         
@@ -322,7 +322,7 @@ def packageFromPath(path, includeModule=False):
     
     :return     <str>
     """
-    path = str(path)
+    path = nstr(path)
     module = ''
     if os.path.isfile(path):
         path, fname = os.path.split(path)

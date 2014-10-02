@@ -25,6 +25,8 @@ import logging
 
 import projex.text
 
+from .text import nativestring as nstr
+
 # support windows server
 try:
     import sspi
@@ -156,8 +158,8 @@ def sendEmail(sender,
         useMSExchange = NOTIFY_SERVER_MSX
     
     # normalize the data
-    sender      = str(sender)
-    recipients  = map(str, recipients)
+    sender      = nstr(sender)
+    recipients  = map(nstr, recipients)
     
     # make sure we have valid information
     if not isEmail(sender):
@@ -183,8 +185,8 @@ def sendEmail(sender,
     msg['Subject']      = projex.text.toUtf8(subject)
     msg['From']         = sender
     msg['To']           = ','.join(recipients)
-    msg['Cc']           = ','.join([str(addr) for addr in cc if isEmail(addr)])
-    msg['Date']         = str(datetime.datetime.now())
+    msg['Cc']           = ','.join([nstr(addr) for addr in cc if isEmail(addr)])
+    msg['Date']         = nstr(datetime.datetime.now())
     msg['Content-type'] = 'Multipart/mixed'
     
     msg.preamble        = 'This is a multi-part message in MIME format.'
@@ -204,7 +206,7 @@ def sendEmail(sender,
             bodyhtml    = bodyhtml.replace( filename, cid )
             
             # add the image to the attachments
-            fp = open( str(filename), 'rb' )
+            fp = open(nstr(filename), 'rb')
             msgImage = MIMEImage(fp.read())
             fp.close()
             
@@ -223,7 +225,7 @@ def sendEmail(sender,
     
     # include attachments
     for attach in attachments:
-        fp = open(str(attach), 'rb')
+        fp = open(nstr(attach), 'rb')
         txt = MIMEBase('application', 'octet-stream')
         txt.set_payload(fp.read())
         fp.close()
@@ -241,7 +243,7 @@ def sendEmail(sender,
     
     # create the connection to the email server
     try:
-        smtp_server = smtplib.SMTP(str(server))
+        smtp_server = smtplib.SMTP(nstr(server))
     except socket.gaierror, err:
         logger.error(err)
         return False
@@ -351,4 +353,4 @@ def isEmail(address):
     :return     <bool> success
     """
     check = re.compile('^[\w\-_\.]+@\w+\.\w+$|^.*\<[\w\-_\.]+@\w+\.\w+\>$')
-    return check.match(str(address)) is not None
+    return check.match(nstr(address)) is not None

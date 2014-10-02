@@ -14,29 +14,26 @@ __email__           = 'team@projexsoftware.com'
 
 import logging
 import os
+import projex
+import projex.resources
+import projex.pyi
 import re
 import shutil
 import subprocess
-import shlex
 import sys
 import time
 import zipfile
+
+from xml.etree import ElementTree
+from projex.enum import enum
+from projex.xbuild import templ
+from projex.xbuild import errors
+from projex.text import nativestring as nstr
 
 try:
     import yaml
 except ImportError:
     yaml = None
-
-from xml.etree import ElementTree
-from xml.parsers.expat import ExpatError
-
-import projex
-import projex.pyi
-from projex.enum import enum
-from projex.xbuild import templ
-from projex.xbuild import errors
-
-import projex.resources
 
 log = logging.getLogger(__name__)
 
@@ -1175,7 +1172,7 @@ class Builder(object):
             
             # load options
             for key, value in yexe.get('options', {}).items():
-                value = str(value)
+                value = nstr(value)
                 if value.startswith('.'):
                     value = mkpath(value)
                 self._executableOptions[key] = value
@@ -1666,9 +1663,9 @@ class Builder(object):
         if module:
             mod = projex.importfile(module)
             if mod:
-                return getattr(mod, str(name), None)
+                return getattr(mod, nstr(name), None)
         
-        return Builder._plugins.get(str(name))
+        return Builder._plugins.get(nstr(name))
  
     @staticmethod
     def register(plugin, name=None):
@@ -1681,7 +1678,7 @@ class Builder(object):
         if name is None:
             name = plugin.__name__
         
-        Builder._plugins[str(name)] = plugin
+        Builder._plugins[nstr(name)] = plugin
     
     @classmethod
     def fromXml(cls, xdata, filepath=''):

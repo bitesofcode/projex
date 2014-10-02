@@ -16,6 +16,8 @@ import locale
 import re
 import urllib2
 
+from .text import nativestring as nstr
+
 _expr = re.compile('^(?P<symbol>[^\w\d-])?(?P<amount>[-\d,]+\.?\d*)'\
                    '\s*(?P<currency>.*)$')
 
@@ -146,7 +148,7 @@ def toString(amount, currency=None, rounded=None):
         symbol = SYMBOLS.get(currency, '')
     
     # insert meaningful commas
-    astr   = str(int(abs(amount)))
+    astr   = nstr(int(abs(amount)))
     alen   = len(astr)
     
     if ( len(astr) > 3 ):

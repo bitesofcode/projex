@@ -18,6 +18,8 @@ __email__           = 'team@projexsoftware.com'
 import logging
 import sys
 
+from .text import nativestring as nstr
+
 ERROR_MESSAGE = """\
 %(levelname)s: %(type)s Error occurrd:
     * logger: %(name)s
@@ -48,7 +50,7 @@ class ProjexErrorHandler(logging.Handler):
         if ( logger.level <= record.levelno ):
             err = record.msg[0]
             if ( not isinstance( err, Exception ) ):
-                err = ProjexError(str(record.msg))
+                err = ProjexError(nstr(record.msg))
             
             # log the traceback info
             data = record.__dict__.copy()

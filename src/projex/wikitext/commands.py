@@ -303,15 +303,14 @@ __email__           = 'team@projexsoftware.com'
 #------------------------------------------------------------------------------
 
 import logging
-import os
+import projex.text
+import projex.makotext
 import re
 import xml.sax.saxutils
 
 from projex.wikitext.urlhandler import UrlHandler
 from projex.wikitext import styles as WIKI_STYLES
-
-import projex.text
-import projex.makotext
+from projex.text import nativestring as nstr
 
 logger = logging.getLogger(__name__)
 
@@ -532,7 +531,7 @@ def render(plain,
         if sline.startswith('<nowiki'):
             mode = re.search('mode="(\w*)"', sline)
             if mode:
-                nowiki_mode = str(mode.group(1))
+                nowiki_mode = nstr(mode.group(1))
             else:
                 nowiki_mode = None
             

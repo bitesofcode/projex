@@ -22,6 +22,7 @@ from xml.etree import ElementTree
 
 import projex.text
 from projex import makotext
+from .text import nativestring as nstr
 
 logger = logging.getLogger(__name__)
 
@@ -286,7 +287,7 @@ class Scaffold(object):
         
         :return     <Property> || None
         """
-        return self._properties.get(str(name))
+        return self._properties.get(nstr(name))
 
     def properties(self):
         """

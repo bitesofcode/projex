@@ -13,7 +13,8 @@ __email__           = 'team@projexsoftware.com'
 import projex.text
 import urllib
 import urlparse
-import re
+
+from .text import nativestring as nstr
 
 # B
 #----------------------------------------------------------------------
@@ -38,7 +39,7 @@ def build(path, query=None, fragment=''):
     
     :return     <str> | url
     """
-    url = str(path)
+    url = nstr(path)
     
     # replace the optional arguments in the url
     keys = projex.text.findkeys(path)
@@ -57,10 +58,10 @@ def build(path, query=None, fragment=''):
         if type(query) is dict:
             mapped_query = {}
             for key, value in query.items():
-                mapped_query[str(key)] = str(value)
+                mapped_query[nstr(key)] = nstr(value)
             query_str = urllib.urlencode(mapped_query)
         else:
-            query_str = str(query)
+            query_str = nstr(query)
         
         url += '?' + query_str
     
@@ -82,7 +83,7 @@ def parse(url):
     
     :return     (<str> path, <dict> query, <str> fragment)
     """
-    result = urlparse.urlparse(str(url))
+    result = urlparse.urlparse(nstr(url))
     
     path = result.scheme + '://' + result.netloc
     if result.path:
@@ -110,7 +111,7 @@ def register(scheme):
     
     :param      schema | <str>
     """
-    scheme = str(scheme)
+    scheme = nstr(scheme)
     urlparse.uses_fragment.append(scheme)
     urlparse.uses_netloc.append(scheme)
     urlparse.uses_params.append(scheme)

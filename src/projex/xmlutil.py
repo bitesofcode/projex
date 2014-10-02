@@ -17,7 +17,7 @@ from xml.etree import ElementTree
 
 from .addon import AddonManager
 from .decorators import abstractmethod
-from .text import nativestring
+from .text import nativestring as nstr
 
 class XmlObject(AddonManager):
     def __init__(self):
@@ -244,7 +244,7 @@ class BoolIO(XmlDataIO):
         else:
             elem = ElementTree.Element('bool')
         
-        elem.text = str(data)
+        elem.text = nstr(data)
         return elem
 
 XmlDataIO.registerAddon('bool', BoolIO())
@@ -289,7 +289,7 @@ class DictIO(XmlDataIO):
         
         for key, value in sorted(data.items()):
             xitem = ElementTree.SubElement(elem, 'item')
-            xitem.set('key', nativestring(key))
+            xitem.set('key', nstr(key))
             XmlDataIO.toXml(value, xitem)
         
         return elem
@@ -325,7 +325,7 @@ class FloatIO(XmlDataIO):
         else:
             elem = ElementTree.Element('float')
         
-        elem.text = str(data)
+        elem.text = nstr(data)
         return elem
 
 XmlDataIO.registerAddon('float', FloatIO())
@@ -359,7 +359,7 @@ class IntegerIO(XmlDataIO):
         else:
             elem = ElementTree.Element('int')
         
-        elem.text = str(data)
+        elem.text = nstr(data)
         return elem
 
 XmlDataIO.registerAddon('int', IntegerIO())
@@ -469,7 +469,7 @@ class OrderedDictIO(XmlDataIO):
         
         for key, value in sorted(data.items()):
             xitem = ElementTree.SubElement(elem, 'item')
-            xitem.set('key', nativestring(key))
+            xitem.set('key', nstr(key))
             XmlDataIO.toXml(value, xitem)
         
         return elem
@@ -541,7 +541,7 @@ class StringIO(XmlDataIO):
         else:
             elem = ElementTree.Element('str')
         
-        elem.text = nativestring(data)
+        elem.text = nstr(data)
         return elem
 
 XmlDataIO.registerAddon('str', StringIO())

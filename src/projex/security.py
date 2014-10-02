@@ -23,15 +23,13 @@ import base64
 import hashlib
 import logging
 import os.path
-import optparse
 import random
 import struct
-import string
-import sys
 
 logger = logging.getLogger(__name__)
 
 import projex.text
+from .text import nativestring as nstr
 
 
 try:
@@ -232,7 +230,7 @@ def generateToken(bits=32):
         hasher = hashlib.sha256
     if bits == 32:
         hasher = hashlib.md5
-    return hasher(str(random.getrandbits(256))).hexdigest()
+    return hasher(nstr(random.getrandbits(256))).hexdigest()
 
 def pad(text, bits=32):
     """

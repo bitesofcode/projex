@@ -21,6 +21,7 @@ import re
 import projex.text
 
 from xml.etree import ElementTree
+from .text import nativestring as nstr
 
 try:
     import json
@@ -226,11 +227,11 @@ def xmlresponse(py_data):
             
             # convert a boolean
             elif type(py_obj) == bool:
-                xitem.text = str(int(py_obj))
+                xitem.text = nstr(int(py_obj))
             
             # convert a non-string object
             elif not type(py_obj) in (str, unicode):
-                xitem.text = str(py_obj)
+                xitem.text = nstr(py_obj)
             
             # convert a string object
             else:

@@ -15,6 +15,7 @@ __email__           = 'team@projexsoftware.com'
 
 #------------------------------------------------------------------------------
 
+from .text import nativestring as nstr
 from xml.etree import ElementTree
 
 class DataSet(dict):
@@ -48,7 +49,7 @@ class DataSet(dict):
         :param      key   | <str>
                     value | <variant>
         """
-        skey = str(key)
+        skey = nstr(key)
         self._defaults[skey]    = value
         self[skey]              = value
     
@@ -66,7 +67,7 @@ class DataSet(dict):
         :param      key     | <str>
                     value   | <variant>
         """
-        self[str(key)] = value
+        self[nstr(key)] = value
     
     def toXml( self, xparent ):
         """
@@ -84,7 +85,7 @@ class DataSet(dict):
             if ( typ in DataSet._xmlTypes ):
                 DataSet._xmlTypes[typ][0](elem, value)
             else:
-                elem.set('value', str(value))
+                elem.set('value', nstr(value))
     
     def value( self, key, default = None ):
         """
@@ -95,7 +96,7 @@ class DataSet(dict):
         
         :return     <variant>
         """
-        return self.get(str(key), default)
+        return self.get(nstr(key), default)
     
     @classmethod
     def fromXml( cls, xparent ):
@@ -131,18 +132,18 @@ class DataSet(dict):
                     encoder | <method>
                     decoder | <method>
         """
-        DataSet._xmlTypes[str(type)] = (encoder, decoder)
+        DataSet._xmlTypes[nstr(type)] = (encoder, decoder)
         
 #------------------------------------------------------------------------------
 
 DataSet.registerXmlType( 'int',   
-                         lambda x, v: x.set('value', str(v)),
+                         lambda x, v: x.set('value', nstr(v)),
                          lambda x: int(x.get('value', 0)) )
                          
 DataSet.registerXmlType( 'float', 
-                         lambda x, v: x.set('value', str(v)),
+                         lambda x, v: x.set('value', nstr(v)),
                          lambda x: float(x.get('value', 0)) )
 
 DataSet.registerXmlType( 'bool',
-                         lambda x, v: x.set('value', str(v)),
+                         lambda x, v: x.set('value', nstr(v)),
                          lambda x: x.get('value') == 'True' )

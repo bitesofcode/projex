@@ -16,6 +16,7 @@ __email__           = 'team@projexsoftware.com'
 #------------------------------------------------------------------------------
 
 import re
+from .text import nativestring as nstr
 
 EXPR_NATURAL    = re.compile( '([^\d]*)(\d*)' )
 EXPR_VERSIONAL  = re.compile( '([^\d]*)([\.]?\d*)' )
@@ -39,8 +40,8 @@ def natural( a, b ):
                 |>>> print a
                 |['test1', 'test2', 'test09', 'test10', 'test20']
     """
-    stra        = str(a).lower()
-    strb        = str(b).lower()
+    stra        = nstr(a).lower()
+    strb        = nstr(b).lower()
     
     # test to see if the two are identical
     if stra == strb:
@@ -100,8 +101,8 @@ def versional( a, b ):
                 |>>> print a
                 |['test-1.1.2', 'test-1.02', 'test-1.18', 'test-1.2']
     """
-    stra        = str(a).lower()
-    strb        = str(b).lower()
+    stra        = nstr(a).lower()
+    strb        = nstr(b).lower()
     
     # look up all the pairs of items
     aresults    = EXPR_VERSIONAL.findall(stra)

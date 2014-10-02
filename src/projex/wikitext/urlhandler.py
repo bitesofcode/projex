@@ -17,6 +17,8 @@ __maintainer__      = 'Projex Software'
 __email__           = 'team@projexsoftware.com'
 
 import logging
+from projex.text import nativestring as nstr
+
 logger = logging.getLogger(__name__)
 
 class UrlHandler(object):
@@ -116,7 +118,7 @@ class UrlHandler(object):
         
         :param      url | <str>
         """
-        self._rootUrl = str(url)
+        self._rootUrl = nstr(url)
     
     def setStaticUrl(self, url):
         """
@@ -124,7 +126,7 @@ class UrlHandler(object):
         
         :param      url | <str>
         """
-        self._staticUrl = str(url)
+        self._staticUrl = nstr(url)
     
     @staticmethod
     def current():

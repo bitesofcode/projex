@@ -13,6 +13,8 @@ __license__         = 'LGPL'
 __maintainer__      = 'Projex Software'
 __email__           = 'team@projexsoftware.com'
 
+from .text import nativestring as nstr
+
 #------------------------------------------------------------------------------
 
 EMAIL           = r'^[\w\-_\.]+@\w+\.\w+$'
@@ -50,7 +52,7 @@ def fromSearch(text):
     :return     <str>
     """
     terms = []
-    for term in str(text).split(','):
+    for term in nstr(text).split(','):
         # assume if no *'s then the user wants to search anywhere as keyword
         if not '*' in term:
             term = '*%s*' % term

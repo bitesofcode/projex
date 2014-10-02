@@ -34,6 +34,8 @@ import os
 import re
 import sys
 
+from .text import nativestring as nstr
+
 logger = logging.getLogger(__name__)
 
 class EnvManager(object):
@@ -87,7 +89,7 @@ class EnvManager(object):
         :return     bool: success
         """
         # normalize the path
-        path = os.path.normcase(str(path)).strip()
+        path = os.path.normcase(nstr(path)).strip()
         if ( path and path != '.' and not path in sys.path ):
             sys.path.append(path)
             self._addedpaths.append(path)
@@ -118,7 +120,7 @@ class EnvManager(object):
             cache = {}
         
         # return the cleaned variable
-        output  = str(text)
+        output  = nstr(text)
         keys    = re.findall( '\$(\w+)|\${(\w+)\}|\%(\w+)\%', text )
         
         for first, second, third in keys:
@@ -163,7 +165,7 @@ class EnvManager(object):
         :return     bool: success
         """
         # normalize the path
-        path = os.path.normcase(str(path)).strip()
+        path = os.path.normcase(nstr(path)).strip()
         if ( path and path != '.' and not path in sys.path ):
             sys.path.append(path)
             self._addedpaths.insert(0, path)
@@ -203,7 +205,7 @@ class EnvManager(object):
                 continue
             
             self._loadedRequires.append(module)
-            path_key = 'PROJEX_%s_PATH' % str(module).upper()
+            path_key = 'PROJEX_%s_PATH' % nstr(module).upper()
             env_path = os.getenv(path_key)
             
             logger.debug( 'Looking up %s: %s' % (path_key, env_path) )
@@ -223,7 +225,7 @@ class EnvManager(object):
         
         :return     <bool>
         """
-        name = str(name)
+        name = nstr(name)
         
         # import a module when refactoring based on a string
         if ( isinstance(module, basestring) ):
@@ -358,11 +360,11 @@ class EnvManager(object):
         
         :return     (<str> path, <str> package)
         """
-        filepath = str(filepath).strip().strip('.')
+        filepath = nstr(filepath).strip().strip('.')
         if ( not filepath ):
             return ('', '')
         
-        basepath, module = os.path.split(str(filepath))
+        basepath, module = os.path.split(nstr(filepath))
         module       = os.path.splitext(module)[0]
         pathsplit    = os.path.normpath(basepath).split( os.path.sep )
         packagesplit = []

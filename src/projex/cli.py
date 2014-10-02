@@ -28,6 +28,7 @@ import inspect
 import logging
 import sys
 
+from .text import nativestring as nstr
 from optparse import OptionParser
 
 logger = logging.getLogger(__name__)
@@ -119,7 +120,7 @@ class climethod(object):
         """
         usage = self.usage()
         if self.__doc__:
-            usage += '\n' + str(self.__doc__)
+            usage += '\n' + nstr(self.__doc__)
         
         parser = PARSER_CLASS(usage=usage)
         

@@ -20,7 +20,7 @@ __email__           = 'team@projexsoftware.com'
 # define version information (major,minor,maintanence)
 __depends__ = []
 __major__   = 3
-__minor__   = 0
+__minor__   = 1
 __revision__ = 0
 
 __version_info__   = (__major__, __minor__, __revision__)

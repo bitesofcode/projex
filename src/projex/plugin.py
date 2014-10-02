@@ -14,6 +14,8 @@ import glob
 import os.path
 import logging
 import sys
+
+from .text import nativestring as nstr
 from xml.etree import ElementTree
 
 import projex
@@ -81,7 +83,7 @@ class Plugin(object):
     
     def __init__(self, name, version=1.0):
         # define basic information
-        self._name          = str(name)
+        self._name          = nstr(name)
         self._version       = version
         
         # define advanced information
@@ -230,7 +232,7 @@ class Plugin(object):
         
         :param      author | <str>
         """
-        self._author = str(author)
+        self._author = nstr(author)
     
     def setDescription(self, description):
         """
@@ -246,7 +248,7 @@ class Plugin(object):
         
         :param      email | <str>
         """
-        self._email = str(email)
+        self._email = nstr(email)
     
     def setEnabled(self, state):
         """
@@ -280,7 +282,7 @@ class Plugin(object):
         
         :param      filepath | <str>
         """
-        self._icon = str(filepath)
+        self._icon = nstr(filepath)
     
     def setUrl(self, url):
         """
@@ -288,7 +290,7 @@ class Plugin(object):
         
         :param      url | <str>
         """
-        self._url = str(url)
+        self._url = nstr(url)
     
     def url(self):
         """
@@ -467,7 +469,7 @@ class Plugin(object):
         """
         cls.loadPlugins()
         plugs = getattr(cls, '_%s__plugins' % cls.__name__, {})
-        return plugs.get(str(name))
+        return plugs.get(nstr(name))
     
     @classmethod
     def pluginNames(cls, enabled=True):
@@ -693,7 +695,7 @@ class PluginProxy(Plugin):
         
         :return     <PluginProxy> || None
         """
-        xdata = ElementTree.parse(str(filepath))
+        xdata = ElementTree.parse(nstr(filepath))
         xroot  = xdata.getroot()
         
         # collect variable information
