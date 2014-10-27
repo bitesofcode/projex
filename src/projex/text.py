@@ -341,7 +341,8 @@ def joinWords(text, separator=''):
     
     return output
 
-def pluralize(word):
+
+def pluralize(word, count=None, format=u'{word}'):
     """
     Converts the inputed word to the plural form of it.  This method works
     best if you use the inflect module, as it will just pass along the
@@ -350,13 +351,18 @@ def pluralize(word):
     
     :sa         https://pypi.python.org/pypi/inflect
     
-    :param      word        <str>
+    :param      word | <str>
     
     :return     <str>
     """
-    word = toUtf8(word)
+    if count == 1:
+        return word
+    elif count is not None:
+        return format.format(word=word, count=count)
+
+    word = nativestring(word)
     if inflect_engine:
-        return inflect_engine.plural(word)
+        return format.format(word=inflect_engine.plural(word))
     
     all_upper = EXPR_UPPERCASE.match(word) != None
     
@@ -366,18 +372,18 @@ def pluralize(word):
         results = expr.match(word)
         if results:
             result_dict = results.groupdict()
-            single      = result_dict.get('single','')
+            single = result_dict.get('single','')
             
             # check if its capitalized
-            if ( all_upper ):
-                return single + plural.upper()
+            if all_upper:
+                return format.format(word=single + plural.upper())
             else:
-                return single + plural
+                return format.format(word=single + plural)
     
     # by default, just include 's' at the end
     if all_upper:
-        return word + 'S'
-    return word + 's'
+        return format.format(word=word + 'S')
+    return format.format(word=word + 's')
 
 def pretty( text ):
     """
@@ -662,6 +668,19 @@ def stripHtml(html, joiner=''):
     stripper = HTMLStripper()
     stripper.feed(html.replace('<br>', '\n').replace('<br/>', '\n'))
     return stripper.text(joiner)
+
+def truncate(text, length=50, ellipsis='...'):
+    """
+    Returns a truncated version of the inputed text.
+
+    :param      text | <str>
+                length | <int>
+                ellipsis | <str>
+
+    :return     <str>
+    """
+    text = nativestring(text)
+    return text[:length] + (text[length:] and ellipsis)
 
 def toAscii(text):
     """
