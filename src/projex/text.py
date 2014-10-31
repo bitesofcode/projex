@@ -538,7 +538,7 @@ def render( text, options, processed = None ):
                     value = underscore(value)
                 elif ( 'capitalize' == pref ):
                     value = capitalize(value)
-                elif ( 'pluralize' == pref ):
+                elif ( pref in ('pluralize', 'plural') ):
                     value = pluralize(value)
                 elif ( 'words' == pref ):
                     value = ' '.join(words(value))
