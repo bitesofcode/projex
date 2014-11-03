@@ -513,7 +513,7 @@ class Builder(object):
                 opts['cliname'] = self.executableCliName()
                 opts['collect'] = templ.SPECFILE_CLI.format(**opts)
             else:
-                opts['collect'] = templ.SPECFILE_COLLECT
+                opts['collect'] = templ.SPECFILE_COLLECT.format(**opts)
             
             if opts['onefile']:
                 data = templ.SPECFILE_ONEFILE.format(**opts)
