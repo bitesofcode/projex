@@ -178,10 +178,15 @@ def importmodules(package_or_toc, ignore=None, recurse=False, silent=None):
         
         # import a module by string
         else:
+            use_sub_modules = False
+            if package_or_toc.endswith('.*'):
+                use_sub_modules = True
+                package_or_toc = package_or_toc[:-2]
+
             try:
                 __import__(package_or_toc)
                 module = sys.modules[package_or_toc]
-            except ImportError, err:
+            except ImportError as err:
                 if not silent:
                     logger.error('Unable to import module: %s', package_or_toc)
                     logger.debug(traceback.print_exc())
@@ -190,8 +195,16 @@ def importmodules(package_or_toc, ignore=None, recurse=False, silent=None):
                 if not silent:
                     logger.error('Unable to find module: %s', package_or_toc)
                 return []
-            
-            return importmodules(module)
+
+            if use_sub_modules:
+                base = os.path.dirname(module.__file__)
+                for path in os.listdir(base):
+                    if path.endswith('.py') and path != '__init__.py':
+                        importmodules(package_or_toc + '.' + path.replace('.py', ''))
+                    elif os.path.isdir(os.path.join(base, path)):
+                        importmodules(package_or_toc + '.' + path)
+            else:
+                return importmodules(module)
     
     # import from a given package
     else:
