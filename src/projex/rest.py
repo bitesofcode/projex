@@ -97,7 +97,7 @@ def json2py(json_obj):
         json_obj[key] = value
     return json_obj
 
-def jsonify(py_data):
+def jsonify(py_data, default=None):
     """
     Converts the inputed Python data to JSON format.
     
