@@ -1884,7 +1884,26 @@ class PackageBuilder(Builder):
         builder.loadYaml(ydata, filepath=filepath)
         return builder
 
+class ApplicationBuilder(PackageBuilder):
+    def __init__(self, pkg):
+        super(ApplicationBuilder, self).__init__(pkg)
+
+        self.setOptions(self.Options.GenerateDocs |
+                        self.Options.GenerateExecutable |
+                        self.Options.GenerateInstaller)
+
+class SignedApplicationBuilder(ApplicationBuilder):
+    def __init__(self, pkg):
+        super(ApplicationBuilder, self).__init__(pkg)
+
+        self.setOptions(self.Options.GenerateDocs |
+                        self.Options.GenerateExecutable |
+                        self.Options.GenerateInstaller |
+                        self.Options.Signed)
+
 Builder.register(PackageBuilder)
+Builder.register(ApplicationBuilder)
+Builder.register(SignedApplicationBuilder)
 
 def build_cmd():
     if len(sys.argv) < 2:

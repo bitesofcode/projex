@@ -3,3 +3,6 @@
 /src/build
 /src/dist
 /src/projex.egg-info
+*.pyo
+*.exe
+*.zip
