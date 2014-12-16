@@ -6,24 +6,25 @@ enumerated types
 """
 
 # define authorship information
-__authors__         = ['Eric Hulser']
-__author__          = ','.join(__authors__)
-__credits__         = []
-__copyright__       = 'Copyright (c) 2011, Projex Software'
-__license__         = 'LGPL'
+__authors__ = ['Eric Hulser']
+__author__ = ','.join(__authors__)
+__credits__ = []
+__copyright__ = 'Copyright (c) 2011, Projex Software'
+__license__ = 'LGPL'
 
 # maintanence information
-__maintainer__      = 'Projex Software'
-__email__           = 'team@projexsoftware.com'
+__maintainer__ = 'Projex Software'
+__email__ = 'team@projexsoftware.com'
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 
 # use the text module from projex
 from projex import text
 
+
 class enum(dict):
     C_TYPES = ['EnumType']
-    
+
     """ 
     Class for generating enumerated types. 
     
@@ -42,7 +43,7 @@ class enum(dict):
                 |>>> TestType.keys()
                 |[1,2,4]
     """
-    
+
     def __call__(self, key):
         """
         Same as __getitem__.  This will cast the inputed key to its corresponding
@@ -54,7 +55,7 @@ class enum(dict):
         :return     <int> || <str>
         """
         return self[key]
-    
+
     def __getitem__(self, key):
         """
         Overloads the base dictionary functionality to support
@@ -71,11 +72,11 @@ class enum(dict):
             if not result:
                 raise KeyError, key
             return result
-        
+
         # lookup the value for the inputed key
         else:
-            return super(enum, self).__getitem__( key )
-    
+            return super(enum, self).__getitem__(key)
+
     def __init__(self, *args, **kwds):
         """
         Initializes the enum type by assigning a binary
@@ -83,30 +84,31 @@ class enum(dict):
         are supplied.
         """
         super(enum, self).__init__()
-        
+
         # initialize from a wrapped C Enum type
         if len(args) == 1 and type(args[0]).__name__ in enum.C_TYPES:
             cenum = args[0]
             args = tuple()
-            
+
             for k in dir(cenum):
                 val = getattr(cenum, k)
                 if type(val) == cenum:
                     kwds[k] = val
-        
+
         # store the base types for different values
         self._bases = {}
-        
+        self._labels = {}
+
         # update based on the inputed arguments
-        kwds.update(dict([(key, 2**index) for index, key in enumerate(args)]))
-        
+        kwds.update(dict([(key, 2 ** index) for index, key in enumerate(args)]))
+
         # set the properties
         for key, value in kwds.items():
             setattr(self, key, value)
-        
+
         # update the keys based on the current keywords
         self.update(kwds)
-    
+
     def add(self, key, value=None):
         """
         Adds the new key to this enumerated type.
@@ -114,12 +116,12 @@ class enum(dict):
         :param      key | <str>
         """
         if value is None:
-            value = 2**(len(self))
-        
+            value = 2 ** (len(self))
+
         self[key] = value
         setattr(self, key, self[key])
         return value
-    
+
     def all(self):
         """
         Returns all the values joined together.
@@ -130,7 +132,7 @@ class enum(dict):
         for key, value in self.items():
             out |= value
         return out
-    
+
     def base(self, value, recurse=True):
         """
         Returns the root base for the given value from this enumeration.
@@ -143,7 +145,7 @@ class enum(dict):
             if not recurse:
                 break
         return value
-    
+
     def displayText(self, value, blank='', joiner=', '):
         """
         Returns the display text for the value associated with
@@ -151,7 +153,7 @@ class enum(dict):
         list of labels for the value, or the blank text provided if
         no text is found.
         
-        :param      value  | <int>
+        :param      value  | <variant>
                     blank  | <str>
                     joiner | <str>
         
@@ -159,17 +161,14 @@ class enum(dict):
         """
         if value is None:
             return ''
-        
-        keys = []
-        for key, check in sorted(self.items(), key=lambda x: x[1]):
-            if value & check:
-                keys.append(key)
-        
-        if keys:
-            return joiner.join(keys)
-        else:
-            return blank
-    
+
+        labels = []
+        for key, my_value in sorted(self.items(), key=lambda x: x[1]):
+            if value & my_value:
+                labels.append(self._labels.get(my_value, text.pretty(key)))
+
+        return joiner.join(labels) or blank
+
     def extend(self, base, key, value=None):
         """
         Adds a new definition to this enumerated type, extending the given
@@ -196,17 +195,39 @@ class enum(dict):
         """
         new_val = self.add(key, value)
         self._bases[new_val] = base
-    
+
+    def label(self, value):
+        """
+        Returns a pretty text version of the key for the inputed value.
+
+        :param      value | <variant>
+
+        :return     <str>
+        """
+        return self._labels.get(value) or text.pretty(self(value))
+
     def labels(self):
         """
         Return a list of "user friendly" labels.
         
         :return     <list> [ <str>, .. ]
         """
-        keys = self.keys()
-        keys.sort(lambda x, y: cmp(self[x], self[y]))
-        return [ text.pretty(key) for key in keys ]
-    
+        return [self._labels.get(value) or text.pretty(key)
+                for key, value in sorted(self.items(), key=lambda x: x[1])]
+
+    def setLabel(self, value, label):
+        """
+        Sets the label text for the inputed value.  This will override the default pretty
+        text label that is used for the key.
+
+        :param      value | <variant>
+                    label | <str>
+        """
+        if value:
+            self._labels[value] = label
+        else:
+            self._labels.pop(value, None)
+
     def text(self, value, default=''):
         """
         Returns the text for the inputed value.
@@ -217,7 +238,7 @@ class enum(dict):
             if val == value:
                 return key
         return default
-    
+
     def valueByLabel(self, label):
         """
         Determine a given value based on the inputed label.
@@ -226,8 +247,8 @@ class enum(dict):
         
         :return     <int>
         """
-        keys    = self.keys()
-        labels  = [ text.pretty(key) for key in keys ]
-        if ( label in labels ):
+        keys = self.keys()
+        labels = [text.pretty(key) for key in keys]
+        if label in labels:
             return self[keys[labels.index(label)]]
         return 0
