@@ -97,13 +97,13 @@ def json2py(json_obj):
         json_obj[key] = value
     return json_obj
 
-def jsonify(py_data, default=None):
+def jsonify(py_data, default=None, indent=4, sort_keys=True):
     """
     Converts the inputed Python data to JSON format.
     
     :param      py_data | <variant>
     """
-    return json.dumps(py_data, default=py2json)
+    return json.dumps(py_data, default=py2json, indent=indent, sort_keys=sort_keys)
 
 def py2json(py_obj):
     """
