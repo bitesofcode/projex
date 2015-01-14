@@ -16,11 +16,11 @@ __email__           = 'team@projexsoftware.com'
 
 #------------------------------------------------------------------------------
 
+import ast
 import datetime
 import logging
 import re
 import sys
-import unicodedata
 
 from HTMLParser import HTMLParser
 from encodings.aliases import aliases
@@ -34,10 +34,17 @@ except ImportError:
 
 # defines the different rules for pluralizing a word
 PLURAL_RULES = [
-    (re.compile('^goose$'),'geese'),
-    (re.compile('^(?P<single>.+)(=?(?P<suffix>s))$'),'ses'),
+    (re.compile('^goose$'), 'geese'),
+    (re.compile('^software$'), 'software'),
+    (re.compile('^(?P<single>.+)(=?(?P<suffix>s))$'), 'ses'),
     (re.compile('^(?P<single>.+)(=?(?P<suffix>y))$'), 'ies')
 ]
+
+CONSTANT_EVALS = {
+    'true': True,
+    'false': False,
+    'null': None
+}
 
 COMMON_TERMS = set([
 'a', 'about', 'all', 'and', 'are', 'as', 'at',
@@ -578,6 +585,26 @@ def render( text, options, processed = None ):
         output = output.replace(repl, value)
     
     return output
+
+def safe_eval(value):
+    """
+    Converts the inputed text value to a standard python value (if possible).
+
+    :param      value | <str> || <unicode>
+
+    :return     <variant>
+    """
+    if not isinstance(value, (str, unicode)):
+        return value
+
+    try:
+        return CONSTANT_EVALS[value]
+    except KeyError:
+        try:
+            return ast.literal_eval(value)
+        except StandardError:
+            return value
+
 
 def sectioned(text, sections=1):
     """

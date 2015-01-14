@@ -112,11 +112,11 @@ def py2json(py_obj):
     :param      py_obj | <variant>
     """
     if type(py_obj) == datetime.datetime:
-        return py_obj.strftime('%Y-%m-%d %H:%M:%S:%f')
+        return py_obj.isoformat()
     elif type(py_obj) == datetime.date:
-        return py_obj.strftime('%Y-%m-%d')
+        return py_obj.isoformat()
     elif type(py_obj) == datetime.time:
-        return py_obj.strftime('%H:%M:%S:%f')
+        return py_obj.isoformat()
     elif type(py_obj) == set:
         return list(py_obj)
     else:
