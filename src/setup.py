@@ -31,7 +31,7 @@ setup(
     keywords = '',
     url = '',
     include_package_data=True,
-    scripts = [r'projex\scripts\xbuild.py'],
+    scripts = [os.path.join('projex', 'scripts', 'xbuild.py')],
     packages = find_packages(),
     install_requires = REQUIREMENTS,
     tests_require = REQUIREMENTS,
