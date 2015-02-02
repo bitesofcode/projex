@@ -81,8 +81,6 @@ class WriteLocker(object):
     def __enter__(self):
         start = datetime.datetime.now()
         self._lock.writer_acquire()
-        log.debug('acquired write lock in: {0}'.format((datetime.datetime.now() - start).total_seconds()))
 
     def __exit__(self, *args):
         self._lock.writer_release()
-        log.debug('released write lock')
