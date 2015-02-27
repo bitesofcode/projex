@@ -1,2 +1,0 @@
-include *.md *.txt *.ini *.cfg *.rst
-recursive-include projex *.html *.bmp *.css *.mako *.txt *.png *.ico *.nsi *.js
