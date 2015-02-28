@@ -299,7 +299,7 @@ class Scaffold(object):
 
     def render(self, template, fail='## :todo: add {template}'):
         """
-        Returns the rendered value for the inputed template name.
+        Returns the rendered value for the inputted template name.
         
         :param      template | <str>
         """
@@ -326,7 +326,7 @@ class Scaffold(object):
 
     def setDescription(self, description):
         """
-        Sets the description of this scaffold to the inputed description.
+        Sets the description of this scaffold to the inputted description.
         
         :param      description | <str>
         """
@@ -334,7 +334,7 @@ class Scaffold(object):
 
     def setGroup(self, group):
         """
-        Sets the group of this scaffold to the inputed group.
+        Sets the group of this scaffold to the inputted group.
         
         :param      group | <str>
         """
@@ -342,7 +342,7 @@ class Scaffold(object):
 
     def setIcon(self, icon):
         """
-        Sets the icon of this scaffold to the inputed icon.
+        Sets the icon of this scaffold to the inputted icon.
         
         :param      icon | <str>
         """
@@ -350,7 +350,7 @@ class Scaffold(object):
 
     def setLanguage(self, lang):
         """
-        Sets the language of this scaffold to the inputed language.
+        Sets the language of this scaffold to the inputted language.
         
         :param      lang | <str>
         """
@@ -358,7 +358,7 @@ class Scaffold(object):
 
     def setName(self, name):
         """
-        Sets the name of this scaffold to the inputed name.
+        Sets the name of this scaffold to the inputted name.
         
         :param      name | <str>
         """

@@ -107,7 +107,7 @@ else:
 
 def camelHump( text ):
     """
-    Converts the inputed text to camel humps by joining all 
+    Converts the inputted text to camel humps by joining all
     capital letters toegether (The Quick, Brown, 
     Fox.Tail -> TheQuickBrownFoxTail)
     
@@ -151,7 +151,7 @@ def capitalizeWords( text ):
 
 def classname( text ):
     """
-    Converts the inputed text to the standard classname format (camel humped 
+    Converts the inputted text to the standard classname format (camel humped
     with a capital letter to start.
     
     :return     <str>
@@ -164,7 +164,7 @@ def classname( text ):
 
 def dashed( text ):
     """
-    Splits all the words from the inputed text into being 
+    Splits all the words from the inputted text into being
     separated by dashes
     
     :sa         [[#joinWords]]
@@ -180,7 +180,7 @@ def dashed( text ):
 
 def encoded(text, encoding=DEFAULT_ENCODING):
     """
-    Encodes the inputed unicode/string variable with the given encoding type.
+    Encodes the inputted unicode/string variable with the given encoding type.
     
     :param      text | <variant>
                 encoding | <str>
@@ -227,7 +227,7 @@ def encoded(text, encoding=DEFAULT_ENCODING):
 
 def decoded(text, encoding=DEFAULT_ENCODING):
     """
-    Attempts to decode the inputed unicode/string variable using the
+    Attempts to decode the inputted unicode/string variable using the
     given encoding type.  If no encoding is provided, then it will attempt
     to use one of the ones available from the default list.
     
@@ -266,7 +266,7 @@ def decoded(text, encoding=DEFAULT_ENCODING):
 
 def findkeys(text):
     """
-    Looks up the format keys from the inputed text file to know before
+    Looks up the format keys from the inputted text file to know before
     formatting what keys are going to be required from a dictionary.
     
     :param      text | <str>
@@ -278,7 +278,7 @@ def findkeys(text):
 
 def isstring(item):
     """
-    Returns whether or not the inputed item should be considered a string.
+    Returns whether or not the inputted item should be considered a string.
     
     :return     <bool>
     """
@@ -286,7 +286,7 @@ def isstring(item):
 
 def nativestring(val, encodings=None):
     """
-    Converts the inputed value to a native python string-type format.
+    Converts the inputted value to a native python string-type format.
     
     :param      val         | <variant>
                 encodings   | (<str>, ..) || None
@@ -313,7 +313,7 @@ def nativestring(val, encodings=None):
 def joinWords(text, separator=''):
     """
     Collects all the words from a text and joins them together
-    with the inputed separator.
+    with the inputted separator.
     
     :sa         [[#words]]
     
@@ -351,7 +351,7 @@ def joinWords(text, separator=''):
 
 def pluralize(word, count=None, format=u'{word}'):
     """
-    Converts the inputed word to the plural form of it.  This method works
+    Converts the inputted word to the plural form of it.  This method works
     best if you use the inflect module, as it will just pass along the
     request to inflect.plural  If you do not have that module, then a simpler
     and less impressive pluralization technique will be used.
@@ -394,7 +394,7 @@ def pluralize(word, count=None, format=u'{word}'):
 
 def pretty( text ):
     """
-    Converts the inputed text to "pretty" text by turning camel 
+    Converts the inputted text to "pretty" text by turning camel
     humps and underscores/dashes to capitalized words. 
     (TheQuickBrownFox -> The Quick Brown Fox, 
     the_quick_fox -> The Quick Fox)
@@ -413,11 +413,11 @@ def pretty( text ):
 
 def render( text, options, processed = None ):
     """
-    Replaces the templates within the inputed text with the given 
+    Replaces the templates within the inputted text with the given
     options.  Templates are defined as text within matching 
     braces, and can include additional formatting options.  
     Any key that is not found in the options will be replaced 
-    as it was found in the inputed text.
+    as it was found in the inputted text.
     
     :param      text        <str>
     :param      options     <dict> { <str> key: <variant> value, .. }
@@ -476,7 +476,7 @@ def render( text, options, processed = None ):
         prefs   = splt[1:]
         value   = None
         
-        # use the inputed options
+        # use the inputted options
         if ( key in options ):
             # extract the value
             value = options[key]
@@ -588,7 +588,7 @@ def render( text, options, processed = None ):
 
 def safe_eval(value):
     """
-    Converts the inputed text value to a standard python value (if possible).
+    Converts the inputted text value to a standard python value (if possible).
 
     :param      value | <str> || <unicode>
 
@@ -608,7 +608,7 @@ def safe_eval(value):
 
 def sectioned(text, sections=1):
     """
-    Splits the inputed text up into sections.
+    Splits the inputted text up into sections.
     
     :param      text | <str>
                 sections | <int>
@@ -623,7 +623,7 @@ def sectioned(text, sections=1):
 
 def singularize(word):
     """
-    Converts the inputed word to the single form of it.  This method works
+    Converts the inputted word to the single form of it.  This method works
     best if you use the inflect module, as it will just pass along the
     request to inflect.singular_noun.  If you do not have that module, then a 
     simpler and less impressive singularization technique will be used.
@@ -654,7 +654,7 @@ def singularize(word):
 
 def stemmed(text):
     """
-    Returns a list of simplified and stemmed down terms for the inputed text.
+    Returns a list of simplified and stemmed down terms for the inputted text.
     
     This will remove common terms and words from the search and return only
     the important root terms.  This is useful in searching algorithms.
@@ -685,7 +685,7 @@ def stemmed(text):
 
 def stripHtml(html, joiner=''):
     """
-    Strips out the HTML tags from the inputed text, returning the basic
+    Strips out the HTML tags from the inputted text, returning the basic
     text.  This algorightm was found on [http://stackoverflow.com/questions/753052/strip-html-from-strings-in-python StackOverflow].
     
     :param      html | <str>
@@ -698,7 +698,7 @@ def stripHtml(html, joiner=''):
 
 def truncate(text, length=50, ellipsis='...'):
     """
-    Returns a truncated version of the inputed text.
+    Returns a truncated version of the inputted text.
 
     :param      text | <str>
                 length | <int>
@@ -711,7 +711,7 @@ def truncate(text, length=50, ellipsis='...'):
 
 def toAscii(text):
     """
-    Safely converts the inputed text to standard ASCII characters.
+    Safely converts the inputted text to standard ASCII characters.
     
     :param      text  | <unicode>
     
@@ -723,7 +723,7 @@ def toAscii(text):
 
 def toBytes(text, encoding=DEFAULT_ENCODING):
     """
-    Converts the inputed text to base string bytes array.
+    Converts the inputted text to base string bytes array.
     
     :param      text | <variant>
     
@@ -739,7 +739,7 @@ def toBytes(text, encoding=DEFAULT_ENCODING):
 
 def toUnicode(data, encoding=DEFAULT_ENCODING):
     """
-    Converts the inputed data to unicode format.
+    Converts the inputted data to unicode format.
     
     :param      data | <str> || <unicode> || <iterable>
     
@@ -768,7 +768,7 @@ def toUnicode(data, encoding=DEFAULT_ENCODING):
 
 def toUtf8(text):
     """
-    Safely converts the inputed text to UTF-8 format.
+    Safely converts the inputted text to UTF-8 format.
     
     :param      text | <unicode>
     
@@ -780,7 +780,7 @@ def toUtf8(text):
 
 def underscore( text, lower = True ):
     """
-    Splits all the words from the inputed text into being 
+    Splits all the words from the inputted text into being
     separated by underscores
     
     :sa         [[#joinWords]]
@@ -799,7 +799,7 @@ def underscore( text, lower = True ):
 
 def xmlindent( elem, level = 0, spacer = '  ' ):
     """
-    Indents the inputed XML element based on the given indent level.
+    Indents the inputted XML element based on the given indent level.
     
     :param      elem    | <xml.etree.Element>
     """
@@ -819,7 +819,7 @@ def xmlindent( elem, level = 0, spacer = '  ' ):
 
 def wordcount(text):
     """
-    Returns the number of words in the inputed text block.
+    Returns the number of words in the inputted text block.
     
     :return     <int>
     """
@@ -827,7 +827,7 @@ def wordcount(text):
 
 def words( text ):
     """
-    Extracts a list of words from the inputed text, parsing 
+    Extracts a list of words from the inputted text, parsing
     out non-alphanumeric characters and splitting camel 
     humps to build the list of words
     

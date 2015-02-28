@@ -268,7 +268,7 @@ def importmodules(package_or_toc, ignore=None, recurse=False, silent=None):
 
 def importobject( module_name, object_name ):
     """
-    Imports the object with the given name from the inputed module.
+    Imports the object with the given name from the inputted module.
     
     :param      module_name | <str>
                 object_name | <str>
@@ -301,7 +301,7 @@ def importobject( module_name, object_name ):
 
 def packageRootPath(path):
     """
-    Retruns the root file path that defines a Python package from the inputed
+    Retruns the root file path that defines a Python package from the inputted
     path.
     
     :param      path | <str>
@@ -329,7 +329,7 @@ def packageRootPath(path):
 
 def packageFromPath(path, includeModule=False):
     """
-    Determines the python package path based on the inputed path.
+    Determines the python package path based on the inputted path.
     
     :param      path | <str>
     

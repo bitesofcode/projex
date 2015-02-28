@@ -21,7 +21,7 @@ from .text import nativestring as nstr
 
 def build(path, query=None, fragment=''):
     """
-    Generates a URL based on the inputed path and given query options and
+    Generates a URL based on the inputted path and given query options and
     fragment.  The query should be a dictionary of terms that will be
     generated into the URL, while the fragment is the anchor point within the
     target path that will be navigated to.  If there are any wildcards within

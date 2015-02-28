@@ -51,7 +51,7 @@ def currencies():
 
 def fromString(money):
     """
-    Returns the amount of money based on the inputed string.
+    Returns the amount of money based on the inputted string.
     
     :param      money   | <str>
     
@@ -129,7 +129,7 @@ def lookup():
 
 def toString(amount, currency=None, rounded=None):
     """
-    Converts the inputed amount of money to a string value.
+    Converts the inputted amount of money to a string value.
     
     :param      amount         | <bool>
                 currency       | <str>

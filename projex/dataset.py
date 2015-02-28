@@ -43,8 +43,8 @@ class DataSet(dict):
     
     def define( self, key, value ):
         """
-        Defines the value for the inputed key by setting both its default and \
-        value to the inputed value.
+        Defines the value for the inputted key by setting both its default and \
+        value to the inputted value.
         
         :param      key   | <str>
                     value | <variant>
@@ -62,7 +62,7 @@ class DataSet(dict):
     
     def setValue( self, key, value ):
         """
-        Sets the current value for the inputed key to the given value.
+        Sets the current value for the inputted key to the given value.
         
         :param      key     | <str>
                     value   | <variant>
@@ -71,7 +71,7 @@ class DataSet(dict):
     
     def toXml( self, xparent ):
         """
-        Saves the settings for this dataset to the inputed parent xml.
+        Saves the settings for this dataset to the inputted parent xml.
         
         :param      xparent | <xml.etree.ElementTree.Element>
         """
@@ -89,7 +89,7 @@ class DataSet(dict):
     
     def value( self, key, default = None ):
         """
-        Returns the current value for the inputed key.
+        Returns the current value for the inputted key.
         
         :param      key     | <str>
                     default | <variant>
@@ -101,7 +101,7 @@ class DataSet(dict):
     @classmethod
     def fromXml( cls, xparent ):
         """
-        Loads the settings for this dataset to the inputed parent xml.
+        Loads the settings for this dataset to the inputted parent xml.
         
         :param      xparent | <xml.etree.ElementTree.Element>
         """

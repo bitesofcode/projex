@@ -84,7 +84,7 @@ DaysInMonth = {
 
 def addMonths(date, months):
     """
-    Returns the new date based on the inputed months.
+    Returns the new date based on the inputted months.
     
     :param      date   | <datetime.date>
                 months | <int>
@@ -121,7 +121,7 @@ def addMonths(date, months):
 
 def addYears(date, years):
     """
-    Returns the new date based on the inputed number of years.
+    Returns the new date based on the inputted number of years.
     
     :param      date  | <datetime.date>
                 years | <int>
@@ -138,7 +138,7 @@ def addYears(date, years):
 def daysInMonth(date):
     """
     Returns the number of the days in the month for the given date.  This will
-    take into account leap years based on the inputed date's year.
+    take into account leap years based on the inputted date's year.
     
     :param      date | <datetime.date>
     
@@ -183,7 +183,7 @@ def displayName(date,
                 options=None,
                 format='%b %d, %Y'):
     """
-    Returns the display name for the inputed date, given the list of options.
+    Returns the display name for the inputted date, given the list of options.
     
     :param      date    | <datetime.date>
                 options | <projex.dates.Names>
@@ -316,7 +316,7 @@ def pretty(source, reference=None):
 
 def named(date, options=None):
     """
-    Returns the best named option for the inputed date based on the inputed
+    Returns the best named option for the inputted date based on the inputted
     date name.
     
     :param      date    | <datetime.date>
@@ -419,7 +419,7 @@ def repeating(first,
               repeatUntil=None,
               maximum=None):
     """
-    Returns a list of repeating dates from the inputed start date based on the
+    Returns a list of repeating dates from the inputted start date based on the
     given mode.  If an repeatUnail date is supplied, then the results will be 
     capped once the last date is reached, otherwise, the maximum number of
     results will be returned.
@@ -541,7 +541,7 @@ def repeating(first,
 
 def weekdays(start, end):
     """
-    Returns the number of weekdays between the inputed start and end dates.
+    Returns the number of weekdays between the inputted start and end dates.
     This would be the equivalent of doing (end - start) to get the number of
     calendar days between the two dates.
     
@@ -550,7 +550,7 @@ def weekdays(start, end):
     
     :return     <int>
     """
-    # don't bother calculating anything for the same inputed date
+    # don't bother calculating anything for the same inputted date
     if start == end:
         return int(start.isoweekday() not in (6, 7))
     elif end < start:

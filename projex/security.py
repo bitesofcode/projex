@@ -85,7 +85,7 @@ def decodeBase64(text, encoding='utf-8'):
 
 def decrypt(text, key=None):
     """
-    Decrypts the inputed text using the inputed key.
+    Decrypts the inputted text using the inputted key.
     
     :param      text    | <str>
                 key     | <str>
@@ -104,7 +104,7 @@ def decrypt(text, key=None):
 def decryptfile(filename, key=None, outfile=None, chunk=64*1024):
     """
     Decrypts a file using AES (CBC mode) with the given key.  If no
-    file is supplied, then the inputed file will be modified in place.
+    file is supplied, then the inputted file will be modified in place.
     The chunk value will be the size with which the function uses to
     read and encrypt the file.  Larger chunks can be faster for some files
     and machines.  The chunk MUST be divisible by 16.
@@ -150,8 +150,8 @@ def encodeBase64(text, encoding='utf-8'):
 
 def encrypt(text, key=None):
     """
-    Encrypts the inputed text using the AES cipher.  If the PyCrypto
-    module is not included, this will simply encode the inputed text to
+    Encrypts the inputted text using the AES cipher.  If the PyCrypto
+    module is not included, this will simply encode the inputted text to
     base64 format.
     
     :param      text    | <str>
@@ -171,7 +171,7 @@ def encrypt(text, key=None):
 def encryptfile(filename, key=None, outfile=None, chunk=64*1024):
     """
     Encrypts a file using AES (CBC mode) with the given key.  If no
-    file is supplied, then the inputed file will be modified in place.
+    file is supplied, then the inputted file will be modified in place.
     The chunk value will be the size with which the function uses to
     read and encrypt the file.  Larger chunks can be faster for some files
     and machines.  The chunk MUST be divisible by 16.
@@ -206,7 +206,7 @@ def encryptfile(filename, key=None, outfile=None, chunk=64*1024):
 
 def generateKey(password, bits=32):
     """
-    Generates a new encryption key based on the inputed password.
+    Generates a new encryption key based on the inputted password.
     
     :param      password    | <str>
                 bits        | <int>  | 16 or 32 bits
@@ -234,7 +234,7 @@ def generateToken(bits=32):
 
 def pad(text, bits=32):
     """
-    Pads the inputed text to ensure it fits the proper block length
+    Pads the inputted text to ensure it fits the proper block length
     for encryption.
     
     :param      text | <str>

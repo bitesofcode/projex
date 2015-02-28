@@ -56,7 +56,7 @@ class XmlObject(AddonManager):
 
     def setXmlData(self, name, value):
         """
-        Sets the property for this XML object to the inputed name and value.
+        Sets the property for this XML object to the inputted name and value.
 
         :param      name  | <str>
                     value | <variant>
@@ -156,7 +156,7 @@ class XmlDataIO(AddonManager):
 
     def testTag(self, elem, tag):
         """
-        Tests the element's tag to make sure it matches the inputed one.  If
+        Tests the element's tag to make sure it matches the inputted one.  If
         it fails, a RuntimeError will be raised.
         
         :param      elem | <xml.etree.ElementTree.Element>
@@ -173,7 +173,7 @@ class XmlDataIO(AddonManager):
     @classmethod
     def fromXml(cls, elem):
         """
-        Converts the inputed element to a Python object by looking through
+        Converts the inputted element to a Python object by looking through
         the IO addons for the element's tag.
         
         :param      elem | <xml.etree.ElementTree.Element>
@@ -192,7 +192,7 @@ class XmlDataIO(AddonManager):
     @classmethod
     def toXml(cls, data, xparent=None):
         """
-        Converts the inputed element to a Python object by looking through
+        Converts the inputted element to a Python object by looking through
         the IO addons for the element's tag.
         
         :param      data     | <variant>
@@ -221,7 +221,7 @@ class XmlDataIO(AddonManager):
 class BoolIO(XmlDataIO):
     def load(self, elem):
         """
-        Converts the inputed bool tag to Python.
+        Converts the inputted bool tag to Python.
         
         :param      elem | <xml.etree.ElementTree>
         
@@ -255,7 +255,7 @@ XmlDataIO.registerAddon('bool', BoolIO())
 class DictIO(XmlDataIO):
     def load(self, elem):
         """
-        Converts the inputed dict tag to Python.
+        Converts the inputted dict tag to Python.
         
         :param      elem | <xml.etree.ElementTree>
         
@@ -302,7 +302,7 @@ XmlDataIO.registerAddon('dict', DictIO())
 class FloatIO(XmlDataIO):
     def load(self, elem):
         """
-        Converts the inputed float tag to Python.
+        Converts the inputted float tag to Python.
         
         :param      elem | <xml.etree.ElementTree>
         
@@ -336,7 +336,7 @@ XmlDataIO.registerAddon('float', FloatIO())
 class IntegerIO(XmlDataIO):
     def load(self, elem):
         """
-        Converts the inputed int tag to Python.
+        Converts the inputted int tag to Python.
         
         :param      elem | <xml.etree.ElementTree>
         
@@ -370,7 +370,7 @@ XmlDataIO.registerAddon('int', IntegerIO())
 class ListIO(XmlDataIO):
     def load(self, elem):
         """
-        Converts the inputed list tag to Python.
+        Converts the inputted list tag to Python.
         
         :param      elem | <xml.etree.ElementTree>
         
@@ -409,7 +409,7 @@ XmlDataIO.registerAddon('list', ListIO())
 class ObjectIO(XmlDataIO):
     def load(self, elem):
         """
-        Converts the inputed object to Python.  This object class must have the fromXml method defined
+        Converts the inputted object to Python.  This object class must have the fromXml method defined
         for this to work.
 
         :param      elem | <xml.etree.ElementTree>
@@ -435,7 +435,7 @@ XmlDataIO.registerAddon('object', ObjectIO())
 class OrderedDictIO(XmlDataIO):
     def load(self, elem):
         """
-        Converts the inputed ordereddict tag to Python.
+        Converts the inputted ordereddict tag to Python.
         
         :param      elem | <xml.etree.ElementTree>
         
@@ -482,7 +482,7 @@ XmlDataIO.registerAddon('OrderedDict', OrderedDictIO())
 class SetIO(XmlDataIO):
     def load(self, elem):
         """
-        Converts the inputed set tag to Python.
+        Converts the inputted set tag to Python.
         
         :param      elem | <xml.etree.ElementTree>
         
@@ -518,7 +518,7 @@ XmlDataIO.registerAddon('set', SetIO())
 class StringIO(XmlDataIO):
     def load(self, elem):
         """
-        Converts the inputed string tag to Python.
+        Converts the inputted string tag to Python.
         
         :param      elem | <xml.etree.ElementTree>
         
@@ -552,7 +552,7 @@ XmlDataIO.registerAddon('str', StringIO())
 class TupleIO(XmlDataIO):
     def load(self, elem):
         """
-        Converts the inputed tuple tag to Python.
+        Converts the inputted tuple tag to Python.
         
         :param      elem | <xml.etree.ElementTree>
         

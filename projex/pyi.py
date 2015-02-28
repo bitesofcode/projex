@@ -20,7 +20,7 @@ import sys
 
 def collect(basepath, exclude=None, processPlugins=True):
     """
-    Collects all the packages associated with the inputed filepath.
+    Collects all the packages associated with the inputted filepath.
     
     :param      module | <module>
     

@@ -149,7 +149,7 @@ class climethod(object):
     
     def run(self, argv):
         """
-        Parses the inputed options and executes the method.
+        Parses the inputted options and executes the method.
         
         :param      argv | [<str>, ..]
         """
@@ -190,7 +190,7 @@ class Interface(object):
     
     def process(self, argv):
         """
-        Processes the inputed arguments within this object's scope.
+        Processes the inputted arguments within this object's scope.
         
         :return     <int>
         """
@@ -198,7 +198,7 @@ class Interface(object):
 
     def register(self, obj, autogenerate=False):
         """
-        Registers the inputed object to this scope.
+        Registers the inputted object to this scope.
         
         :param      obj | <module> || <function> || <climethod>
         """
@@ -250,7 +250,7 @@ class Interface(object):
 
 def command(argv, scope):
     """
-    Looks up a particular command from the inputed arguments for the given \
+    Looks up a particular command from the inputted arguments for the given \
     scope.
     
     :param      argv    | [<str>, ..]
@@ -271,7 +271,7 @@ def command(argv, scope):
 
 def commands(scope):
     """
-    Looks up all climethod instances from the inputed scope.
+    Looks up all climethod instances from the inputted scope.
     
     :return     [<climethod>, ..]
     """
@@ -282,7 +282,7 @@ def commands(scope):
 
 def generate(module):
     """
-    Generates a new interface from the inputed module.
+    Generates a new interface from the inputted module.
     
     :param      module | <module>
     
@@ -294,7 +294,7 @@ def generate(module):
 
 def parser(scope, usage=''):
     """
-    Generates a default parser for the inputed scope.
+    Generates a default parser for the inputted scope.
     
     :param      scope    | <dict> || <module>
                 usage    | <str>
@@ -317,7 +317,7 @@ def parser(scope, usage=''):
 
 def process(argv, scope, interface=None):
     """
-    Processes any commands within the scope that matches the inputed arguments.
+    Processes any commands within the scope that matches the inputted arguments.
     If a subcommand is found, then it is run, and the system exists with the 
     return value from the command.
     

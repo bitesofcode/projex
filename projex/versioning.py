@@ -18,7 +18,7 @@ from . import errors
 def validate(version, comparison):
     """
     Returns whether or not the version for this plugin satisfies the
-    inputed expression.  The expression will follow the depencency
+    inputted expression.  The expression will follow the depencency
     declaration rules associated with setuptools in Python.  More
     information can be found at
     

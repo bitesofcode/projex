@@ -45,7 +45,7 @@ class UrlHandler(object):
     
     def resolve(self, key):
         """
-        Resolves the inputed wiki key to a url path.  This method should \
+        Resolves the inputted wiki key to a url path.  This method should \
         return a url and whether or not the page exists.
         
         :param      key     | <str>
@@ -70,7 +70,7 @@ class UrlHandler(object):
     
     def resolveImage( self, key ):
         """
-        Resolves the image path for the inputed key to a valid URL.
+        Resolves the image path for the inputted key to a valid URL.
         
         :param      key | <str>
         
@@ -114,7 +114,7 @@ class UrlHandler(object):
     
     def setRootUrl( self, url ):
         """
-        Sets the root url for the url handler to the inputed url.
+        Sets the root url for the url handler to the inputted url.
         
         :param      url | <str>
         """
@@ -122,7 +122,7 @@ class UrlHandler(object):
     
     def setStaticUrl(self, url):
         """
-        Sets the static url for the handler to the inputed url.
+        Sets the static url for the handler to the inputted url.
         
         :param      url | <str>
         """

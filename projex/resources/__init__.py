@@ -25,7 +25,7 @@ BASE_PATH = os.path.dirname(__file__)
 
 def find( relpath ):
     """
-    Returns the resource based on the inputed relative path.
+    Returns the resource based on the inputted relative path.
     
     :param      relpath  |  <str>
     

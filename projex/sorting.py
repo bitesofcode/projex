@@ -23,7 +23,7 @@ EXPR_VERSIONAL  = re.compile( '([^\d]*)([\.]?\d*)' )
 
 def natural( a, b ):
     """
-    Sorts the inputed items by their natural order, trying to extract a \
+    Sorts the inputted items by their natural order, trying to extract a \
     number from them to sort by.
     
     :param      a       <str>
@@ -81,7 +81,7 @@ def natural( a, b ):
 
 def versional( a, b ):
     """
-    Sorts the inputed items by their natural order, trying to extract a \
+    Sorts the inputted items by their natural order, trying to extract a \
     number from them to sort by.
     
     :param      a       <str>

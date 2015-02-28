@@ -236,7 +236,7 @@ class Plugin(object):
     
     def setDescription(self, description):
         """
-        Sets the description for this plugin to the inputed plugin.
+        Sets the description for this plugin to the inputted plugin.
         
         :param      description | <str>
         """
@@ -276,7 +276,7 @@ class Plugin(object):
     
     def setIcon(self, filepath):
         """
-        Sets the icon filepath for this plugin to the inputed path.  This can
+        Sets the icon filepath for this plugin to the inputted path.  This can
         be either an absolute path, or a relative path from the location this
         plugin was loaded from.
         
@@ -311,7 +311,7 @@ class Plugin(object):
     @classmethod
     def addPluginPath(cls, pluginpath):
         """
-        Adds the plugin path for this class to the given path.  The inputed
+        Adds the plugin path for this class to the given path.  The inputted
         pluginpath value can either be a list of strings, or a string
         containing paths separated by the OS specific path separator (':' on
         Mac & Linux, ';' on Windows)
@@ -355,7 +355,7 @@ class Plugin(object):
     @classmethod
     def loadPlugins(cls):
         """
-        Initializes the plugins by loading modules from the inputed paths.
+        Initializes the plugins by loading modules from the inputted paths.
         """
         plugs = getattr(cls, '_%s__plugins' % cls.__name__, None)
         if plugs is not None:
@@ -461,7 +461,7 @@ class Plugin(object):
     @classmethod
     def plugin(cls, name):
         """
-        Retreives the plugin based on the inputed name.
+        Retreives the plugin based on the inputted name.
         
         :param      name | <str>
         
@@ -554,7 +554,7 @@ class Plugin(object):
     @classmethod
     def setPluginPath(cls, pluginpath):
         """
-        Sets the plugin path for this class to the given path.  The inputed
+        Sets the plugin path for this class to the given path.  The inputted
         pluginpath value can either be a list of strings, or a string
         containing paths separated by the OS specific path separator (':' on
         Mac & Linux, ';' on Windows)
@@ -689,7 +689,7 @@ class PluginProxy(Plugin):
     @staticmethod
     def fromFile( cls, filepath ):
         """
-        Creates a proxy instance from the inputed registry file.
+        Creates a proxy instance from the inputted registry file.
         
         :param      filepath | <str>
         

@@ -80,7 +80,7 @@ class EnvManager(object):
         
     def appendPath( self, path ):
         """
-        Appends the inputed path to the end of the sys.path variable,
+        Appends the inputted path to the end of the sys.path variable,
         provided the path does not already exist in it.
         
         :param      path
@@ -156,7 +156,7 @@ class EnvManager(object):
         
     def pushPath( self, path ):
         """
-        Pushes the inputed path at the front of the sys.path variable, making
+        Pushes the inputted path at the front of the sys.path variable, making
         it the first path python uses when importing a module.
         
         :param      path
@@ -174,7 +174,7 @@ class EnvManager(object):
     
     def requires( self, *modules ):
         """
-        Registers the system paths for the inputed modules so that they can
+        Registers the system paths for the inputted modules so that they can
         be imported properly.  By default, this will check to see if the
         key PROJEX_[MODULE]_PATH exists in the environment, and if so, insert
         that path to the front of the sys.path for import.  Out of the box
@@ -216,7 +216,7 @@ class EnvManager(object):
     
     def refactor( self, module, name, repl ):
         """
-        Replaces the name in the module dictionary with the inputed replace \
+        Replaces the name in the module dictionary with the inputted replace \
         value.
         
         :param      module  | <str> || <module>
@@ -353,7 +353,7 @@ class EnvManager(object):
     @staticmethod
     def packageSplit( filepath ):
         """ 
-        Determines the python path, and package information for the inputed
+        Determines the python path, and package information for the inputted
         filepath.
         
         :param      filepath  |  <str>

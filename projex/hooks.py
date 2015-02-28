@@ -116,7 +116,7 @@ def excepthook(cls, error, trace):
 
 def formatExcept(cls, error, trace):
     """
-    Formats the inputed class, error, and traceback information to the standard
+    Formats the inputted class, error, and traceback information to the standard
     output commonly found in Python interpreters.
     
     :param      cls     | <type>

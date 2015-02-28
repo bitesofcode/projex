@@ -46,7 +46,7 @@ class enum(dict):
 
     def __call__(self, key):
         """
-        Same as __getitem__.  This will cast the inputed key to its corresponding
+        Same as __getitem__.  This will cast the inputted key to its corresponding
         value in the enumeration.  This works for both numeric and alphabetical
         values.
         
@@ -59,28 +59,28 @@ class enum(dict):
     def __getitem__(self, key):
         """
         Overloads the base dictionary functionality to support
-        lookups by value as well as by key.  If the inputed
+        lookups by value as well as by key.  If the inputted
         type is an integer, then a string is returned.   If the
         lookup is a string, then an integer is returned
         
         :param      key     <str> || <int>
         :return     <int> || <key>
         """
-        # lookup the key for the inputed value
+        # lookup the key for the inputted value
         if type(key) in (int, long):
             result = self.text(key)
             if not result:
                 raise KeyError, key
             return result
 
-        # lookup the value for the inputed key
+        # lookup the value for the inputted key
         else:
             return super(enum, self).__getitem__(key)
 
     def __init__(self, *args, **kwds):
         """
         Initializes the enum type by assigning a binary
-        value to the inputed arguments in the order they
+        value to the inputted arguments in the order they
         are supplied.
         """
         super(enum, self).__init__()
@@ -99,7 +99,7 @@ class enum(dict):
         self._bases = {}
         self._labels = {}
 
-        # update based on the inputed arguments
+        # update based on the inputted arguments
         kwds.update(dict([(key, 2 ** index) for index, key in enumerate(args)]))
 
         # set the properties
@@ -149,7 +149,7 @@ class enum(dict):
     def displayText(self, value, blank='', joiner=', '):
         """
         Returns the display text for the value associated with
-        the inputed text.  This will result in a comma separated
+        the inputted text.  This will result in a comma separated
         list of labels for the value, or the blank text provided if
         no text is found.
         
@@ -198,7 +198,7 @@ class enum(dict):
 
     def label(self, value):
         """
-        Returns a pretty text version of the key for the inputed value.
+        Returns a pretty text version of the key for the inputted value.
 
         :param      value | <variant>
 
@@ -217,7 +217,7 @@ class enum(dict):
 
     def setLabel(self, value, label):
         """
-        Sets the label text for the inputed value.  This will override the default pretty
+        Sets the label text for the inputted value.  This will override the default pretty
         text label that is used for the key.
 
         :param      value | <variant>
@@ -230,7 +230,7 @@ class enum(dict):
 
     def text(self, value, default=''):
         """
-        Returns the text for the inputed value.
+        Returns the text for the inputted value.
         
         :return     <str>
         """
@@ -241,7 +241,7 @@ class enum(dict):
 
     def valueByLabel(self, label):
         """
-        Determine a given value based on the inputed label.
+        Determine a given value based on the inputted label.
 
         :param      label   <str>
         

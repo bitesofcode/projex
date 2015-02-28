@@ -65,7 +65,7 @@ class JSONObject(object):
 
 def json2py(json_obj):
     """
-    Converts the inputed JSON object to a python value.
+    Converts the inputted JSON object to a python value.
     
     :param      json_obj | <variant>
     """
@@ -99,7 +99,7 @@ def json2py(json_obj):
 
 def jsonify(py_data, default=None, indent=4, sort_keys=True):
     """
-    Converts the inputed Python data to JSON format.
+    Converts the inputted Python data to JSON format.
     
     :param      py_data | <variant>
     """
@@ -107,7 +107,7 @@ def jsonify(py_data, default=None, indent=4, sort_keys=True):
 
 def py2json(py_obj):
     """
-    Converts the inputed python object to JSON format.
+    Converts the inputted python object to JSON format.
     
     :param      py_obj | <variant>
     """
@@ -147,7 +147,7 @@ def register(encoder=None, decoder=None):
 
 def response(py_data, format='json'):
     """
-    Converts the inputed python data to a given format.  Valid formats can
+    Converts the inputted python data to a given format.  Valid formats can
     be found in the FORMATS dictionary.  If the format is not valid, then
     a KeyError will be raised.
     
@@ -160,7 +160,7 @@ def response(py_data, format='json'):
 
 def unjsonify(json_data):
     """
-    Converts the inputed JSON data to Python format.
+    Converts the inputted JSON data to Python format.
     
     :param      json_data | <variant>
     """

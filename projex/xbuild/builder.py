@@ -1353,7 +1353,7 @@ class Builder(object):
 
     def setEnvironment(self, environ):
         """
-        Sets the environment for this builder to the inputed environment.
+        Sets the environment for this builder to the inputted environment.
         
         :param      environ | {<str> key: <str> value, ..}
         """
@@ -1711,7 +1711,7 @@ class Builder(object):
     @staticmethod
     def fromFile(filename):
         """
-        Parses the inputed xml file information and generates a builder
+        Parses the inputted xml file information and generates a builder
         for it.
         
         :param      filename | <str>

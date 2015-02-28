@@ -58,7 +58,7 @@ class LazyModule(object):
     def __setattr__(self, key, value):
         """
         Sets the value within the module wrapped by this instance to the
-        inputed value.
+        inputted value.
         
         :param      key | <str>
                     value | <variant>

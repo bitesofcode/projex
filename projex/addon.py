@@ -1,17 +1,18 @@
 """ Defines an addon mixin for classes """
 
 # define authorship information
-__authors__         = ['Eric Hulser']
-__author__          = ','.join(__authors__)
-__credits__         = []
-__copyright__       = 'Copyright (c) 2011, Projex Software'
-__license__         = 'LGPL'
+__authors__ = ['Eric Hulser']
+__author__ = ','.join(__authors__)
+__credits__ = []
+__copyright__ = 'Copyright (c) 2011, Projex Software'
+__license__ = 'LGPL'
 
-__maintainer__      = 'Projex Software'
-__email__           = 'team@projexsoftware.com'
+__maintainer__ = 'Projex Software'
+__email__ = 'team@projexsoftware.com'
 
 import projex
 from projex import errors
+
 
 class AddonMixin(object):
     @classmethod
@@ -21,7 +22,7 @@ class AddonMixin(object):
         """
         for addon_module in cls.addonModules(recurse):
             projex.importmodules(addon_module)
-    
+
     @classmethod
     def addons(cls, recurse=True):
         """
@@ -36,13 +37,13 @@ class AddonMixin(object):
         cls.initAddons()
         prop = '_{0}__addons'.format(cls.__name__)
         out = {}
-        
+
         # lookup base classes
         if recurse:
             for base in cls.__bases__:
                 if issubclass(base, AddonManager):
                     out.update(base.addons(recurse))
-        
+
         # always use the highest level for any given key
         out.update(getattr(cls, prop, {}))
         return out
@@ -59,13 +60,13 @@ class AddonMixin(object):
         """
         prop = '_{0}__addon_modules'.format(cls.__name__)
         out = set()
-        
+
         # lookup base classes
         if recurse:
             for base in cls.__bases__:
                 if issubclass(base, AddonManager):
                     out.update(base.addonModules(recurse))
-        
+
         # always use the highest level for any given key
         out.update(getattr(cls, prop, set()))
         return out
@@ -73,7 +74,7 @@ class AddonMixin(object):
     @classmethod
     def byName(cls, name, recurse=True):
         """
-        Returns the addon whose name matches the inputed name.  If
+        Returns the addon whose name matches the inputted name.  If
         the optional recurse flag is set to True, then all the base classes
         will be searched for the given addon as well.
         
@@ -103,24 +104,24 @@ class AddonMixin(object):
         key = '_{0}__addons_loaded'.format(cls.__name__)
         if getattr(cls, key, False):
             return
-        
+
         cls._initAddons(recurse)
         setattr(cls, key, True)
 
     @classmethod
     def registerAddon(cls, name, addon, force=False):
         """
-        Registers the inputed addon to the class.
+        Registers the inputted addon to the class.
         
         :param      name    | <str>
                     addon   | <variant>
         """
         prop = '_{0}__addons'.format(cls.__name__)
         cmds = getattr(cls, prop, {})
-        
+
         if name in cmds and not force:
             raise errors.AddonAlreadyExists(cls, name, addon)
-        
+
         cmds[name] = addon
         setattr(cls, prop, cmds)
 

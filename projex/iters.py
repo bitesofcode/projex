@@ -18,8 +18,8 @@ import itertools
 
 def batch(iterable, length):
     """
-    Returns a series of iterators across the inputed iterable method, 
-    broken into chunks based on the inputed length.
+    Returns a series of iterators across the inputted iterable method,
+    broken into chunks based on the inputted length.
     
     :param      iterable | <iterable>  | (list, tuple, set, etc.)
                 length   | <int> 
@@ -49,7 +49,7 @@ def batch(iterable, length):
 
 def group(iterable):
     """
-    Creates a min/max grouping for the inputed list of numbers.  This
+    Creates a min/max grouping for the inputted list of numbers.  This
     will shrink a list into the group sets that are available.
     
     :param      iterbale | <iternable> | (list, tuple, set, etc.)

@@ -47,7 +47,7 @@ class Callback(object):
     
     def __call__(self, *args):
         """
-        Calls this callback with the inputed arguments by accessing its stored
+        Calls this callback with the inputted arguments by accessing its stored
         callback function and self arguments.
         
         :param      *args | <variant>
@@ -108,7 +108,7 @@ class CallbackSet(object):
     
     def connect(self, signal, slot):
         """
-        Creates a new connection between the inputed signal and slot.
+        Creates a new connection between the inputted signal and slot.
         
         :param      signal | <variant>
                     slot   | <callable>
@@ -125,7 +125,7 @@ class CallbackSet(object):
     
     def disconnect(self, signal, slot):
         """
-        Breaks the connection between the inputed signal and the given slot.
+        Breaks the connection between the inputted signal and the given slot.
         
         :param      signal | <variant>
                     slot   | <callable>
@@ -141,7 +141,7 @@ class CallbackSet(object):
     
     def isConnected(self, signal, slot):
         """
-        Returns if the given signal is connected to the inputed slot.
+        Returns if the given signal is connected to the inputted slot.
         
         :param      signal | <variant>
                     slot   | <callable>
@@ -156,7 +156,7 @@ class CallbackSet(object):
     
     def emit(self, signal, *args):
         """
-        Emits the given signal with the inputed args.  This will go through
+        Emits the given signal with the inputted args.  This will go through
         its list of connected callback slots and call them.
         
         :param      signal | <variant>

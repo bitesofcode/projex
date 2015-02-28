@@ -64,7 +64,7 @@ SMTP_AUTH_OKAY = 235
 
 def connectMSExchange(server):
     """
-    Creates a connection for the inputed server to a Microsoft Exchange server.
+    Creates a connection for the inputted server to a Microsoft Exchange server.
     
     :credit     http://stackoverflow.com/questions/2916396/smtp-through-exchange-using-integrated-windows-authentication-ntlm-using-pytho
     
@@ -126,9 +126,9 @@ def sendEmail(sender,
               useMSExchange = None,
               encoding = 'utf-8'):
     """
-    Sends an email from the inputed email address to the
-    list of given recipients with the inputed subject and 
-    body.  This will also attach the inputed list of 
+    Sends an email from the inputted email address to the
+    list of given recipients with the inputted subject and
+    body.  This will also attach the inputted list of
     attachments to the email.  The server value will default 
     to mail.<sender_domain> and you can use a ':' to specify 
     a port for the server.
@@ -273,7 +273,7 @@ def sendIm( sender,
             senderDomain = NOTIFY_IM_DOMAIN_SENDER, 
             receiverDomain = NOTIFY_IM_DOMAIN_RECEIVER ):
     """
-    Sends an instant message to the inputed receivers from the
+    Sends an instant message to the inputted receivers from the
     given user.  The senderDomain is an override to be used 
     when no domain is supplied, same for the receiverDomain.
     
@@ -321,7 +321,7 @@ def sendIm( sender,
     
     count = 0
     
-    # send the message to the inputed receivers
+    # send the message to the inputted receivers
     for receiver in receivers:
         if not '@' in receiver:
             receiver += '@' + receiverDomain
@@ -345,7 +345,7 @@ def sendIm( sender,
 
 def isEmail(address):
     """
-    Checks to make sure that the inputed address 
+    Checks to make sure that the inputted address
     follows proper web email address formatting
     
     :param      address     <str>
