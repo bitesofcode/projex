@@ -2,16 +2,6 @@
 Defines the builder class for building versions.
 """
 
-# define authorship information
-__authors__         = ['Eric Hulser']
-__author__          = ','.join(__authors__)
-__credits__         = []
-__copyright__       = 'Copyright (c) 2011, Projex Software'
-__license__         = 'LGPL'
-
-__maintainer__      = 'Projex Software'
-__email__           = 'team@projexsoftware.com'
-
 import logging
 import os
 import projex
@@ -44,30 +34,33 @@ os.environ.setdefault('PYINSTALLER', '/pyinstaller/pyinstaller.py')
 os.environ.setdefault('NSIS_EXE', 'makensis.exe')
 os.environ.setdefault('SIGNTOOL', 'signtool')
 
+
 def cmdexec(cmd):
     proc = subprocess.Popen(cmd,
                             stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE,
                             shell=True)
-    
+
     result = proc.poll()
     while result is None:
         info, err = proc.communicate()
-        
+
         if info:
             log.info(info)
         if err:
             log.error(err)
-        
+
         result = proc.poll()
-    
+
     return result
+
 
 def _mkpath(filepath, text, **opts):
     path = text.format(**opts)
     path = os.path.expandvars(path)
     path = os.path.join(filepath, path)
     return os.path.abspath(path)
+
 
 class Builder(object):
     Options = enum('GenerateRevision',
@@ -77,10 +70,10 @@ class Builder(object):
                    'GenerateSetupFile',
                    'GenerateEgg',
                    'GenerateZipFile',
-                   'Signed',)
-    
+                   'Signed', )
+
     _plugins = {}
-    
+
     def __init__(self):
         # set general information
         self._name = ''
@@ -91,7 +84,7 @@ class Builder(object):
         self._options = Builder.Options.all()
         self._ignoreFileTypes = ['.pyc', '.pyo']
         self._language = 'English'
-        
+
         # set meta information
         self._company = ''
         self._companyUrl = ''
@@ -99,26 +92,28 @@ class Builder(object):
         self._authorEmail = ''
         self._certificate = ''
         self._signcmd = '$SIGNTOOL sign /v /a /f "{cert}" "{filename}"'
-        
+
         # set build paths
         self._distributionPath = ''
         self._sourcePath = ''
         self._outputPath = ''
         self._buildPath = ''
         self._licenseFile = ''
-        
+
         # set executable options
-        opts = {}
-        opts['excludeBinaries'] = 1
-        opts['debug'] = False
-        opts['console'] = False
-        opts['strip'] = None
-        opts['logo'] = projex.resources.find('img/logo.ico')
-        opts['upx'] = True
-        opts['onefile'] = False
-        opts['cmd'] = '$PYTHON -O $PYINSTALLER "{spec}"'
-        
+        opts = {
+            'excludeBinaries': 1,
+            'debug': False,
+            'console': False,
+            'strip': None,
+            'logo': projex.resources.find('img/logo.ico'),
+            'upx': True,
+            'onefile': False,
+            'cmd': '$PYTHON -O $PYINSTALLER "{spec}"'
+        }
+
         self._runtime = ''
+        self._resourcePath = ''
         self._specfile = ''
         self._hookPaths = []
         self._hiddenImports = []
@@ -129,30 +124,31 @@ class Builder(object):
         self._executablePath = ''
         self._productName = ''
         self._executableOptions = opts
-        
+
         # set installation options
-        opts = {}
-        opts['logo'] = projex.resources.find('img/logo.ico')
-        opts['header_image'] = projex.resources.find('img/installer.bmp')
-        opts['finish_image'] = projex.resources.find('img/installer-side.bmp')
-        
+        opts = {
+            'logo': projex.resources.find('img/logo.ico'),
+            'header_image': projex.resources.find('img/installer.bmp'),
+            'finish_image': projex.resources.find('img/installer-side.bmp')
+        }
+
         for k, v in opts.items():
             opts[k] = os.path.abspath(v)
-        
+
         opts['cmd'] = r'$NSIS_EXE "{script}"'
         opts['require_license_approval'] = False
-        
+
         self._installName = ''
         self._installPath = ''
         self._installerOptions = opts
         self._installDirectories = {}
-        
+
         # set documentation options
         self._doxfile = ''
-        
+
         # set revision options
         self._revisionFilename = '__revision__.py'
-        
+
         # set setuptools options
         self._distributionName = ''
         self._keywords = ''
@@ -190,58 +186,57 @@ class Builder(object):
         Builds this object into the desired output information.
         """
         signed = bool(self.options() & Builder.Options.Signed)
-        
+
         # remove previous build information
         buildpath = self.buildPath()
         if not buildpath:
             raise errors.InvalidBuildPath(buildpath)
-        
+
         # setup the environment
         for key, value in self.environment().items():
-            
             log.info('SET {0}={1}'.format(key, value))
             os.environ[key] = value
-        
+
         if os.path.exists(buildpath):
             shutil.rmtree(buildpath)
-        
+
         # generate the build path for the installer
         os.makedirs(buildpath)
-        
+
         # create the output path
         outpath = self.outputPath()
         if not os.path.exists(outpath):
             os.makedirs(outpath)
-        
+
         # copy license information
         src = self.licenseFile()
         if src and os.path.exists(src):
             targ = os.path.join(buildpath, 'license.txt')
             shutil.copyfile(src, targ)
-        
+
         # generate revision information
         if self.options() & Builder.Options.GenerateRevision:
             self.generateRevision()
-        
+
         # generate documentation information
         if self.options() & Builder.Options.GenerateDocs:
             self.generateDocumentation(buildpath)
-        
+
         # generate setup file
         if self.options() & Builder.Options.GenerateSetupFile:
             setuppath = os.path.join(self.sourcePath(), '..')
             egg = (self.options() & Builder.Options.GenerateEgg) != 0
             self.generateSetupFile(setuppath, egg=egg)
-        
+
         # generate executable information
         if self.options() & Builder.Options.GenerateExecutable:
             if not self.generateExecutable(signed=signed):
                 return
-        
+
         # generate zipfile information
         if self.options() & Builder.Options.GenerateZipFile:
             self.generateZipFile(self.outputPath())
-        
+
         # generate installer information
         if self.options() & Builder.Options.GenerateInstaller:
             self.generateInstaller(buildpath, signed=signed)
@@ -411,28 +406,29 @@ class Builder(object):
         """
         return self._keywords
 
+    # noinspection PyMethodMayBeStatic
     def generatePlugins(self, basepath):
         for root, folders, files in os.walk(basepath):
             plugs = []
-            
-            if not '__plugins__.py' in files:
+
+            if '__plugins__.py' not in files:
                 continue
-            
+
             modfiles = filter(lambda x: x.endswith('.py'), files)
             modfiles = map(lambda x: x.replace('.py', ''), modfiles)
-            
+
             pkg = projex.packageFromPath(root)
             modules = filter(lambda x: x not in ('__init__', '__plugins__'), modfiles)
             packages = filter(lambda x: '{0}/{1}/__init__.py'.format(root, x),
                               folders)
-            
+
             names = modules + packages
-            
+
             if pkg:
                 toc = ["'{0}.{1}'".format(pkg, name) for name in names]
             else:
                 toc = ["'{0}'".format(name) for name in names]
-            
+
             # generate the table of contents
             toc.sort()
             text = '__toc__ = [{0}]'.format(',\n'.join(toc).strip())
@@ -440,6 +436,7 @@ class Builder(object):
             f.write(text)
             f.close()
 
+    # noinspection PyMethodMayBeStatic
     def generateDocumentation(self, outpath='.'):
         """
         Generates the documentation for this builder in the output path.
@@ -456,76 +453,77 @@ class Builder(object):
         """
         if not (self.runtime() or self.specfile()):
             return True
-        
+
         if not self.distributionPath():
             return True
-        
+
         if os.path.exists(self.distributionPath()):
             shutil.rmtree(self.distributionPath())
-        
+
         if os.path.isfile(self.sourcePath()):
             basepath = os.path.normpath(os.path.dirname(self.sourcePath()))
         else:
             basepath = os.path.normpath(self.sourcePath())
-        
+
         # store the plugin table of contents
         self.generatePlugins(basepath)
-        
+
         # generate the specfile if necessary
         specfile = self.specfile()
-        
+        # generate the spec file options
+        opts = {
+            'name': self.name(),
+            'exname': self.executableName(),
+            'product': self.productName(),
+            'runtime': self.runtime(),
+            'srcpath': self.sourcePath(),
+            'buildpath': self.buildPath(),
+            'hookpaths': ',\n'.join(wrap_str(self.hookPaths())),
+            'hiddenimports': ',\n'.join(wrap_str(self.hiddenImports())),
+            'distpath': self.distributionPath(),
+            'platform': sys.platform,
+            'excludes': ',\n'.join(wrap_str(self.executableExcludes()))
+        }
+
         if not specfile:
-            # generate the spec file options
-            opts = {}
-            opts['name'] = self.name()
-            opts['exname'] = self.executableName()
-            opts['product'] = self.productName()
-            opts['runtime'] = self.runtime()
-            opts['srcpath'] = self.sourcePath()
-            opts['buildpath'] = self.buildPath()
-            opts['hookpaths'] = ',\n'.join(wrap_str(self.hookPaths()))
-            opts['hiddenimports'] = ',\n'.join(wrap_str(self.hiddenImports()))
-            opts['distpath'] = self.distributionPath()
-            opts['platform'] = sys.platform
-            opts['excludes'] = ',\n'.join(wrap_str(self.executableExcludes()))
-            
             datasets = []
             for typ, data in self.executableData():
                 if typ == 'tree':
-                    args = {}
-                    args['path'] = data[0]
-                    args['prefix'] = data[1]
-                    args['excludes'] = ','.join(wrap_str(data[2]))
-                    
+                    args = {
+                        'path': data[0],
+                        'prefix': data[1],
+                        'excludes': ','.join(wrap_str(data[2]))
+                    }
+
                     datasets.append(templ.SPECTREE.format(**args))
-            
+
                 else:
                     args = {}
                     args.update(data)
                     args.setdefault('type', typ)
                     datasets.append(templ.SPECDATA.format(**args))
-            
+
             opts['datasets'] = '\n'.join(datasets)
-            
+
             opts.update(self._executableOptions)
-            
+
             if self.executableCliName():
                 opts['cliname'] = self.executableCliName()
                 opts['collect'] = templ.SPECFILE_CLI.format(**opts)
             else:
                 opts['collect'] = templ.SPECFILE_COLLECT.format(**opts)
-            
+
             if opts['onefile']:
                 data = templ.SPECFILE_ONEFILE.format(**opts)
             else:
                 data = templ.SPECFILE.format(**opts)
-            
+
             # generate the spec file for building
             specfile = os.path.join(self.buildPath(), self.name() + '.spec')
             f = open(specfile, 'w')
             f.write(data)
             f.close()
-        
+
         cmd = os.path.expandvars(self.executableOption('cmd'))
         success = cmdexec(cmd.format(spec=specfile)) == 0
         if signed:
@@ -533,7 +531,7 @@ class Builder(object):
                                    opts['product'],
                                    opts['exname'] + '.exe')
             self.sign(binfile)
-        
+
         return success
 
     def generateRevision(self):
@@ -543,7 +541,7 @@ class Builder(object):
         revpath = self.sourcePath()
         if not os.path.exists(revpath):
             return
-        
+
         # determine the revision location
         revfile = os.path.join(revpath, self.revisionFilename())
         mode = ''
@@ -559,17 +557,17 @@ class Builder(object):
                 mode = 'git'
             except WindowsError:
                 return
-        
+
         # process SVN revision
         rev = None
-        
+
         if mode == 'svn':
             for line in proc.stdout:
                 data = re.match('^Revision: (\d+)', line)
                 if data:
                     rev = int(data.group(1))
                     break
-        
+
         if rev is not None:
             try:
                 f = open(revfile, 'w')
@@ -578,6 +576,7 @@ class Builder(object):
             except IOError:
                 pass
 
+    # noinspection PyTypeChecker
     def generateInstaller(self, outpath='.', signed=False):
         """
         Generates the installer for this builder.
@@ -587,48 +586,49 @@ class Builder(object):
         log.info('Generating Installer....')
 
         # generate the options for the installer
-        opts = {}
-        opts['name'] = self.name()
-        opts['exname'] = self.executableName()
-        opts['version'] = self.version()
-        opts['company'] = self.company()
-        opts['language'] = self.language()
-        opts['license'] = self.license()
-        opts['platform'] = sys.platform
-        opts['product'] = self.productName()
-        opts['outpath'] = self.outputPath()
-        opts['instpath'] = self.installPath()
-        opts['instname'] = self.installName()
-        opts['buildpath'] = self.buildPath()
-        opts['srcpath'] = self.sourcePath()
-        opts['nsis_exe'] = os.environ['NSIS_EXE']
-        opts['signed'] = ''
-        opts['signcmd'] = ''
+        opts = {
+            'name': self.name(),
+            'exname': self.executableName(),
+            'version': self.version(),
+            'company': self.company(),
+            'language': self.language(),
+            'license': self.license(),
+            'platform': sys.platform,
+            'product': self.productName(),
+            'outpath': self.outputPath(),
+            'instpath': self.installPath(),
+            'instname': self.installName(),
+            'buildpath': self.buildPath(),
+            'srcpath': self.sourcePath(),
+            'nsis_exe': os.environ['NSIS_EXE'],
+            'signed': '',
+            'signcmd': ''
+        }
 
         basetempl = ''
         if self.runtime() and os.path.exists(self.distributionPath()):
             opts['compilepath'] = os.path.join(self.distributionPath(), self.executableName())
             basetempl = templ.NSISAPP
-        
+
         elif os.path.isfile(self.sourcePath()):
             opts['compilepath'] = self.sourcePath()
             opts['install'] = templ.NSISMODULE.format(**opts)
             basetempl = templ.NSISLIB
-        
+
         else:
             opts['compilepath'] = self.sourcePath()
             opts['install'] = templ.NSISPACKAGE.format(**opts)
             basetempl = templ.NSISLIB
-        
+
         # sign the uninstaller
         if signed and self.signcmd():
             cmd = self.signcmd().format(filename='', cert=self.certificate())
             cmd = os.path.expandvars(cmd)
             cmd = cmd.replace('""', '')
-            
+
             opts['signed'] = '!define SIGNED'
             opts['signcmd'] = cmd
-        
+
         opts.update(self._installerOptions)
 
         # expand the plugin paths
@@ -663,44 +663,44 @@ class Builder(object):
             opts['require_license_approval'] = templ.NSISLICENSERADIO
         else:
             opts['require_license_approval'] = ''
-        
+
         outfile = os.path.join(os.path.abspath(outpath), 'autogen.nsi')
         opts['__file__'] = outfile
-        
+
         # update the additional directories
         addtl = []
         for directory, source in self._installDirectories.items():
             directory = os.path.expandvars(directory.format(**opts))
             directory = os.path.normpath(directory)
-            
+
             if source:
                 source = os.path.expandvars(source.format(**opts))
                 source = os.path.abspath(source)
-                
+
                 addtl.append('    SetOutPath "{0}"'.format(directory))
                 addtl.append('    File /nonfatal /r "{0}"'.format(source))
             else:
                 addtl.append('    CreateDirectory "{0}"'.format(directory))
-        
+
         opts['addtl_commands'] = '\n'.join(addtl)
         data = basetempl.format(**opts)
-        
+
         # create the output file
         f = open(outfile, 'w')
         f.write(data)
         f.close()
-        
+
         installerfile = os.path.join(self.outputPath(), self.installName())
         installerfile += '-{0}.exe'.format(sys.platform)
-        
+
         # run the installer
         cmd = os.path.expandvars(self.installerOption('cmd'))
         success = cmdexec(cmd.format(script=outfile))
-        
+
         # sign the installer
         if signed:
             self.sign(installerfile)
-        
+
         log.info('Executing installer...')
         cmdexec(installerfile)
 
@@ -710,49 +710,50 @@ class Builder(object):
         """
         outpath = os.path.abspath(outpath)
         outfile = os.path.join(outpath, 'setup.py')
-        
-        opts = {}
-        opts['name'] = self.name()
-        opts['distname'] = self.distributionName()
-        opts['version'] = self.version()
-        opts['author'] = self.author()
-        opts['author_email'] = self.authorEmail()
-        opts['keywords'] = self.keywords()
-        opts['license'] = self.license()
-        opts['brief'] = self.brief()
-        opts['description'] = self.description()
-        opts['url'] = self.companyUrl()
-        
+
+        opts = {
+            'name': self.name(),
+            'distname': self.distributionName(),
+            'version': self.version(),
+            'author': self.author(),
+            'author_email': self.authorEmail(),
+            'keywords': self.keywords(),
+            'license': self.license(),
+            'brief': self.brief(),
+            'description': self.description(),
+            'url': self.companyUrl()
+        }
+
         wrap_dict = lambda x: map(lambda k: "r'{0}': [{1}]".format(k[0],
-                                  ',\n'.join(wrap_str(k[1]))),
+                                                                   ',\n'.join(wrap_str(k[1]))),
                                   x.items())
-        
+
         opts['dependencies'] = ',\n'.join(wrap_str(self.dependencies()))
         opts['classifiers'] = ',\n'.join(wrap_str(self.classifiers()))
-        
+
         if os.path.isfile(self.sourcePath()):
             basepath = os.path.normpath(os.path.dirname(self.sourcePath()))
         else:
             basepath = os.path.normpath(self.sourcePath())
-        
+
         self.generatePlugins(basepath)
-        
+
         exts = set()
         for root, folders, files in os.walk(basepath):
-            for file in files:
-                _, ext = os.path.splitext(file)
-                if not ext in ('.py', '.pyc', '.pyo'):
+            for file_ in files:
+                _, ext = os.path.splitext(file_)
+                if ext not in ('.py', '.pyc', '.pyo'):
                     exts.add('*' + ext)
-                
+
         exts = list(exts)
         text = templ.SETUPFILE.format(**opts)
-        
+
         # generate the file
         if not os.path.exists(outfile):
             f = open(outfile, 'w')
             f.write(text)
             f.close()
-        
+
         # generate the manifest file
         manfile = os.path.join(outpath, 'MANIFEST.in')
         if not os.path.exists(manfile):
@@ -760,7 +761,7 @@ class Builder(object):
             f.write('include *.md *.txt *.ini *.cfg *.rst\n')
             f.write('recursive-include {0} {1}\n'.format(self.name(), ' '.join(exts)))
             f.close()
-        
+
         # generate the egg
         if egg:
             cmd = 'cd {0} && $PYTHON setup.py bdist_egg'.format(outpath)
@@ -773,7 +774,7 @@ class Builder(object):
         """
         fname = self.installName() + '.zip'
         outfile = os.path.abspath(os.path.join(outpath, fname))
-        
+
         # clears out the exiting archive
         if os.path.exists(outfile):
             try:
@@ -781,10 +782,10 @@ class Builder(object):
             except OSError:
                 log.warning('Could not remove zipfile: %s', outfile)
                 return False
-        
+
         # generate the zip file
         zfile = zipfile.ZipFile(outfile, 'w')
-        
+
         # zip up all relavent fields from the code base
         if os.path.isfile(self.sourcePath()):
             zfile.write(self.sourcePath(), os.path.basename(self.sourcePath()))
@@ -795,23 +796,23 @@ class Builder(object):
                 # ignore hidden folders
                 if '.svn' in root or '.git' in root:
                     continue
-                
+
                 # ignore setuptools build info
                 part = root[baselen:].split(os.path.sep)[0]
                 if part in ('build', 'dist') or part.endswith('.egg-info'):
                     continue
-                
+
                 # include files
                 for filename in filenames:
                     ext = os.path.splitext(filename)[1]
                     if ext in self.ignoreFileTypes():
                         continue
-                    
+
                     arcroot = root[baselen:].replace('\\', '/')
                     arcname = os.path.join(arcroot, filename)
                     log.info('Archiving %s...', arcname)
                     zfile.write(os.path.join(root, filename), arcname)
-            
+
         zfile.close()
         return True
 
@@ -853,7 +854,7 @@ class Builder(object):
             opts['revision'] = '.{0}'.format(self.revision())
         else:
             opts['revision'] = ''
-        
+
         if self._installName:
             return self._installName.format(**opts)
         else:
@@ -921,11 +922,10 @@ class Builder(object):
         :param      xdata | <xml.etree.ElementTree.Element>
         """
         # build options
-        opts = {}
-        opts['platform'] = sys.platform
-        
+        opts = {'platform': sys.platform}
+
         mkpath = lambda x: _mkpath(filepath, x, **opts)
-        
+
         # lookup environment variables
         xenv = xdata.find('environment')
         if xenv is not None:
@@ -937,9 +937,9 @@ class Builder(object):
                     env[xkey.tag] = os.path.expandvars(text)
                 else:
                     env[xkey.tag] = ''
-            
+
             self.setEnvironment(env)
-        
+
         # lookup general settings
         xsettings = xdata.find('settings')
         if xsettings is not None:
@@ -949,7 +949,7 @@ class Builder(object):
                 attr = '_' + key
                 if hasattr(self, attr):
                     setattr(self, attr, val)
-        
+
         # lookup options
         xoptions = xdata.find('options')
         if xoptions is not None:
@@ -957,46 +957,46 @@ class Builder(object):
             for xopt in xoptions:
                 key = xopt.tag
                 value = xopt.text
-                
+
                 if value.lower() == 'true':
                     try:
                         options |= Builder.Options[key]
                     except KeyError:
                         continue
-            
+
             self._options = options
-        
+
         # lookup path options
         xpaths = xdata.find('paths')
         if xpaths is not None:
             for xpath in xpaths:
                 key = xpath.tag
                 path = xpath.text
-                
+
                 if key.endswith('Paths'):
                     path = map(mkpath, path.split(';'))
                 else:
                     path = mkpath(path)
-                
+
                 setattr(self, '_' + key, path)
-        
+
         # lookup executable options
         xexe = xdata.find('executable')
         if xexe is not None:
-            exe_tags = {'runtime':'_runtime',
+            exe_tags = {'runtime': '_runtime',
                         'exe': '_executableName',
                         'cli': '_executableCliName',
                         'product': '_productName'}
-            
+
             for tag, prop in exe_tags.items():
                 xtag = xexe.find(tag)
                 if xtag is not None:
                     value = xtag.text
                     if value.startswith('.'):
                         value = mkpath(value)
-                    
+
                     setattr(self, prop, value)
-            
+
             # load exclude options
             xexcludes = xexe.find('excludes')
             if xexcludes is not None:
@@ -1004,7 +1004,7 @@ class Builder(object):
                 for xexclude in xexcludes:
                     excludes.append(xexclude.text)
                 self.setExecutableExcludes(excludes)
-            
+
             # load build data
             xexedata = xexe.find('data')
             if xexedata is not None:
@@ -1016,18 +1016,18 @@ class Builder(object):
                             path = mkpath(path)
                         else:
                             path = self.sourcePath()
-                        
+
                         prefix = xentry.get('prefix', os.path.basename(path))
                         excludes = xentry.get('excludes', '').split(';')
-                        
+
                         if excludes:
                             data.append(('tree', (path, prefix, excludes)))
                     else:
                         for xitem in xentry:
                             data.append((xentry.tag, xitem.attrs))
-                
+
                 self.setExecutableData(data)
-            
+
             # load hidden imports
             xhiddenimports = xexe.find('hiddenimports')
             if xhiddenimports is not None:
@@ -1035,7 +1035,7 @@ class Builder(object):
                 for ximport in xhiddenimports:
                     imports.append(ximport.text)
                 self.setHiddenImports(imports)
-            
+
             # load options
             xopts = xexe.find('options')
             if xopts is not None:
@@ -1045,12 +1045,12 @@ class Builder(object):
                     else:
                         value = xopt.text
                     self._executableOptions[xopt.tag] = value
-        
+
         # lookup installer options
         xinstall = xdata.find('installer')
         if xinstall is not None:
             install_tags = {'name': '_installName'}
-            
+
             for tag, prop in install_tags.items():
                 xtag = xinstall.find(tag)
                 if xtag is not None:
@@ -1058,7 +1058,7 @@ class Builder(object):
                     if value.startswith('.'):
                         value = mkpath(value)
                     setattr(self, prop, value)
-            
+
             xopts = xinstall.find('options')
             if xopts is not None:
                 for xopt in xopts:
@@ -1066,9 +1066,9 @@ class Builder(object):
                         value = mkpath(xopt.text)
                     else:
                         value = xopt.text
-                    
+
                     self._installerOptions[xopt.tag] = value
-            
+
             xdirectories = xinstall.find('additional_directories')
             if xdirectories is not None:
                 for xdir in xdirectories:
@@ -1081,11 +1081,10 @@ class Builder(object):
         :param      ydata | <dict>
         """
         # build options
-        opts = {}
-        opts['platform'] = sys.platform
-        
+        opts = {'platform': sys.platform}
+
         mkpath = lambda x: _mkpath(filepath, x, **opts)
-        
+
         # lookup environment variables
         env = {}
         for key, text in ydata.get('environment', {}).items():
@@ -1093,15 +1092,15 @@ class Builder(object):
                 env[key] = os.path.expandvars(text)
             else:
                 env[key] = ''
-        
+
         self.setEnvironment(env)
-        
+
         # lookup general settings
         for key, val in ydata.get('settings', {}).items():
             attr = '_' + key
             if hasattr(self, attr):
                 setattr(self, attr, val)
-        
+
         # lookup options
         yoptions = ydata.get('options')
         if yoptions is not None:
@@ -1112,37 +1111,37 @@ class Builder(object):
                         options |= Builder.Options[key]
                     except KeyError:
                         continue
-            
+
             self._options = options
-        
+
         # lookup path options
         for key, path in ydata.get('paths', {}).items():
             if key.endswith('Paths'):
                 path = map(mkpath, path.split(';'))
             else:
                 path = mkpath(path)
-            
+
             setattr(self, '_' + key, path)
-        
+
         # lookup executable options
         yexe = ydata.get('executable')
         if yexe is not None:
-            exe_tags = {'runtime':'_runtime',
+            exe_tags = {'runtime': '_runtime',
                         'exe': '_executableName',
                         'cli': '_executableCliName',
                         'product': '_productName'}
-            
+
             for tag, prop in exe_tags.items():
                 if tag in yexe:
                     value = yexe.pop(tag)
                     if value.startswith('.'):
                         value = mkpath(value)
-                    
+
                     setattr(self, prop, value)
-            
+
             # load exclude options
             self.setExecutableExcludes(yexe.get('excludes', []))
-            
+
             # load build data
             yexedata = yexe.get('data', {})
             if yexedata:
@@ -1154,47 +1153,47 @@ class Builder(object):
                             path = mkpath(path)
                         else:
                             path = self.sourcePath()
-                        
+
                         prefix = value.get('prefix', os.path.basename(path))
                         excludes = value.get('excludes', '').split(';')
-                        
+
                         if excludes:
                             data.append(('tree', (path, prefix, excludes)))
-                    
+
                     else:
                         for item in value:
                             data.append((key, item))
-                
+
                 self.setExecutableData(data)
-            
+
             # load hidden imports
             self.setHiddenImports(yexe.get('hiddenimports', []))
-            
+
             # load options
             for key, value in yexe.get('options', {}).items():
                 value = nstr(value)
                 if value.startswith('.'):
                     value = mkpath(value)
                 self._executableOptions[key] = value
-        
+
         # lookup installer options
         yinstall = ydata.get('installer')
         if yinstall is not None:
             install_tags = {'name': '_installName'}
-            
+
             for tag, prop in install_tags.items():
                 if tag in yinstall:
                     value = yinstall.pop(tag, None)
                     if value.startswith('.'):
                         value = mkpath(value)
                     setattr(self, prop, value)
-            
+
             for key, value in yinstall.get('options', {}).items():
                 if type(value) in (unicode, str) and value.startswith('.'):
                     value = mkpath(value)
-                
+
                 self._installerOptions[key] = value
-            
+
             for path in yinstall.get('additional_directories', []):
                 self._installDirectories[path.get('path', '')] = path.get('source', '')
 
@@ -1213,7 +1212,7 @@ class Builder(object):
         :return     <str>
         """
         return self._outputPath
-    
+
     def resourcePath(self):
         """
         Returns the path for generating the revision information.
@@ -1486,13 +1485,13 @@ class Builder(object):
         """
         self._language = language
 
-    def setLicense(self, license):
+    def setLicense(self, license_):
         """
         Returns the license associated with this builder.
         
-        :param      license | <str>
+        :param      license_ | <str>
         """
-        self._license = license
+        self._license = license_
 
     def setLicenseFile(self, filename):
         """
@@ -1554,7 +1553,7 @@ class Builder(object):
     def setRuntime(self, runtime):
         """
         Sets the runtime script for this builder to the given path.  This is
-        ussed in conjunction with generateExecutable to determine what paths
+        used in conjunction with generateExecutable to determine what paths
         to use for building a runtime file.
         
         :param      runtime | <str>
@@ -1618,12 +1617,12 @@ class Builder(object):
         elif not certificate and '{cert}' in sign:
             log.error('No sign certificated defined.')
             return False
-        
+
         log.info('Signing {0}...'.format(filename))
         sign = os.path.expandvars(sign)
         filename = os.path.expandvars(filename)
         cert = os.path.expandvars(certificate)
-        
+
         # let the previous process finish fully, or we might get some file errors
         time.sleep(2)
         return cmdexec(sign.format(filename=filename, cert=cert)) == 0
@@ -1651,7 +1650,7 @@ class Builder(object):
         :return     <str>
         """
         return self._version
- 
+
     @staticmethod
     def plugin(name, module=''):
         """
@@ -1664,9 +1663,9 @@ class Builder(object):
             mod = projex.importfile(module)
             if mod:
                 return getattr(mod, nstr(name), None)
-        
+
         return Builder._plugins.get(nstr(name))
- 
+
     @staticmethod
     def register(plugin, name=None):
         """
@@ -1677,9 +1676,9 @@ class Builder(object):
         """
         if name is None:
             name = plugin.__name__
-        
+
         Builder._plugins[nstr(name)] = plugin
-    
+
     @classmethod
     def fromXml(cls, xdata, filepath=''):
         """
@@ -1693,7 +1692,7 @@ class Builder(object):
         builder = cls()
         builder.loadXml(xdata, filepath=filepath)
         return builder
-    
+
     @classmethod
     def fromYaml(cls, ydata, filepath=''):
         """
@@ -1707,7 +1706,7 @@ class Builder(object):
         builder = cls()
         builder.loadYaml(ydata, filepath=filepath)
         return builder
-    
+
     @staticmethod
     def fromFile(filename):
         """
@@ -1720,26 +1719,26 @@ class Builder(object):
         """
         xdata = None
         ydata = None
-        
+
         # try parsing an XML file
         try:
             xdata = ElementTree.parse(filename).getroot()
         except StandardError:
             xdata = None
-        
+
         if xdata is None:
             # try parsing a yaml file
             if yaml:
                 with open(filename, 'r') as f:
                     text = f.read()
-                
+
                 try:
                     ydata = yaml.load(text)
                 except StandardError:
                     return None
             else:
                 log.warning('Could not process yaml builder!')
-        
+
         # load a yaml definition
         if type(ydata) == dict:
             typ = ydata.get('type')
@@ -1749,7 +1748,7 @@ class Builder(object):
                 return builder.fromYaml(ydata, os.path.dirname(filename))
             else:
                 log.warning('Could not find builder: {0}'.format(typ))
-        
+
         # load an xml definition
         elif xdata is not None:
             typ = xdata.get('type')
@@ -1759,16 +1758,18 @@ class Builder(object):
                 return builder.fromXml(xdata, os.path.dirname(filename))
             else:
                 log.warning('Could not find builder: {0}'.format(typ))
-        
+
         return None
- 
-#----------------------------------------------------------------------
+
+
+# ----------------------------------------------------------------------
 
 class PackageBuilder(Builder):
     """ A builder for an individual package. """
+
     def __init__(self, pkg):
         super(PackageBuilder, self).__init__()
-        
+
         # set build information from the package
         filepath = getattr(pkg, '__file__', '')
         if '__init__' in filepath:
@@ -1777,18 +1778,18 @@ class PackageBuilder(Builder):
         else:
             if filepath.endswith('.pyc'):
                 filepath = filepath[:-1]
-            
+
             srcpath = filepath
             product = os.path.basename(srcpath)
-        
+
         rscpath = os.path.join(srcpath, '..', '..', 'resources')
         buildpath = os.path.join(srcpath, '..', '.build')
         distpath = os.path.join(srcpath, '..', '.dist')
         outpath = os.path.join(srcpath, '..', '.bin', sys.platform)
-        
+
         instpath = os.path.dirname(sys.executable)
         instpath = os.path.join(instpath, 'Lib', 'site-packages')
-        
+
         self.setProductName(product)
         self.setDistributionPath(os.path.abspath(distpath))
         self.setSourcePath(os.path.abspath(srcpath))
@@ -1796,12 +1797,12 @@ class PackageBuilder(Builder):
         self.setBuildPath(os.path.abspath(buildpath))
         self.setOutputPath(os.path.abspath(outpath))
         self.setInstallPath(instpath)
-        
+
         if hasattr(pkg, '__bdist_name__'):
             self.setName(getattr(pkg, '__bdist_name__', ''))
         else:
             self.setName(getattr(pkg, '__name__', ''))
-        
+
         self.setVersion(getattr(pkg, '__version__', '0.0'))
         self.setRevision(getattr(pkg, '__revision__', ''))
         self.setAuthor(getattr(pkg, '__maintainer__', ''))
@@ -1827,14 +1828,14 @@ class PackageBuilder(Builder):
         if pkg_data is not None:
             path = pkg_data.find('path').text
             name = pkg_data.find('name').text
-            
+
             if filepath:
                 path = os.path.join(filepath, path)
-            
+
             path = os.path.abspath(path)
             sys.path.insert(0, path)
             sys.modules.pop(name, None)
-            
+
             try:
                 __import__(name)
                 module = sys.modules[name]
@@ -1842,7 +1843,7 @@ class PackageBuilder(Builder):
                 return None
         else:
             return None
-        
+
         # generate the builder
         builder = cls(module)
         builder.loadXml(xdata, filepath=filepath)
@@ -1863,14 +1864,14 @@ class PackageBuilder(Builder):
         if pkg_data is not None:
             path = pkg_data.get('path', '')
             name = pkg_data.get('name', '')
-            
+
             if filepath:
                 path = os.path.join(filepath, path)
-            
+
             path = os.path.abspath(path)
             sys.path.insert(0, path)
             sys.modules.pop(name, None)
-            
+
             try:
                 __import__(name)
                 module = sys.modules[name]
@@ -1878,11 +1879,12 @@ class PackageBuilder(Builder):
                 return None
         else:
             return None
-        
+
         # generate the builder
         builder = cls(module)
         builder.loadYaml(ydata, filepath=filepath)
         return builder
+
 
 class ApplicationBuilder(PackageBuilder):
     def __init__(self, pkg):
@@ -1891,6 +1893,7 @@ class ApplicationBuilder(PackageBuilder):
         self.setOptions(self.Options.GenerateDocs |
                         self.Options.GenerateExecutable |
                         self.Options.GenerateInstaller)
+
 
 class SignedApplicationBuilder(ApplicationBuilder):
     def __init__(self, pkg):
@@ -1901,18 +1904,20 @@ class SignedApplicationBuilder(ApplicationBuilder):
                         self.Options.GenerateInstaller |
                         self.Options.Signed)
 
+
 Builder.register(PackageBuilder)
 Builder.register(ApplicationBuilder)
 Builder.register(SignedApplicationBuilder)
+
 
 def build_cmd():
     if len(sys.argv) < 2:
         print 'usage: projex/xbuild/builder [buildfile] (--no-remote)'
         sys.exit(0)
-    
+
     xml = None
     ydata = None
-    
+
     # load environment settings
     try:
         xml = ElementTree.parse(sys.argv[1]).getroot()
@@ -1922,7 +1927,7 @@ def build_cmd():
                 ydata = yaml.load(f.read())
             except StandardError:
                 ydata = None
-    
+
     env = {}
     if xml is not None:
         xenv = xml.find('environment')
@@ -1930,17 +1935,17 @@ def build_cmd():
             for xentry in xenv:
                 k, v = (xentry.tag, xentry.text)
                 env[k] = os.path.expandvars(v)
-    
+
     elif type(ydata) == dict:
         for k, v in ydata.get('environment', {}).items():
             if v is None:
                 v = ''
-            
+
             env[k] = os.path.expandvars(v)
-    
+
     for k, v in env.items():
         os.environ[k] = v
-    
+
     # run this build in another environment
     if '--no-remote' not in sys.argv and \
        'PYTHON' in env and \
@@ -1957,6 +1962,7 @@ def build_cmd():
             builder.build()
             sys.exit(0)
         sys.exit(1)
+
 
 if __name__ == '__main__':
     logging.basicConfig()

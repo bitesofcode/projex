@@ -1,25 +1,13 @@
-#!/usr/bin/python
-
-""" 
+"""
 Defines a URL mapping system to control how the wiki text will handle different
 URLs.
 """
-
-# define authorship information
-__authors__         = ['Eric Hulser']
-__author__          = ','.join(__authors__)
-__credits__         = []
-__copyright__       = 'Copyright (c) 2011, Projex Software'
-__license__         = 'LGPL'
-
-# maintanence information
-__maintainer__      = 'Projex Software'
-__email__           = 'team@projexsoftware.com'
 
 import logging
 from projex.text import nativestring as nstr
 
 logger = logging.getLogger(__name__)
+
 
 class UrlHandler(object):
     """ 
@@ -28,12 +16,12 @@ class UrlHandler(object):
     and lookup the proper http url to the target.
     """
     _current = None
-    
-    def __init__( self ):
+
+    def __init__(self):
         self._rootUrl = ''
         self._staticUrl = ''
         self._replaceWikiSuffix = True
-    
+
     def replaceWikiSuffix(self):
         """
         Returns whether or not the .wiki format should be replaced with a
@@ -42,7 +30,8 @@ class UrlHandler(object):
         :return     <bool>
         """
         return self._replaceWikiSuffix
-    
+
+    # noinspection PyMethodMayBeStatic
     def resolve(self, key):
         """
         Resolves the inputted wiki key to a url path.  This method should \
@@ -53,9 +42,10 @@ class UrlHandler(object):
         :return     (<str> url, <bool> exists)
         """
         logger.debug('Key not found: ', key)
-        return ('', False)
-    
-    def resolveClass( self, cls ):
+        return '', False
+
+    # noinspection PyMethodMayBeStatic
+    def resolveClass(self, cls):
         """
         Resolves a pointer to a class reference - this will be in the form
         of <package>.<className> and should return the documentation for the
@@ -66,9 +56,10 @@ class UrlHandler(object):
         :return     <str>
         """
         logger.debug('Class not found', cls)
-        return ('', False)
-    
-    def resolveImage( self, key ):
+        return '', False
+
+    # noinspection PyMethodMayBeStatic
+    def resolveImage(self, key):
         """
         Resolves the image path for the inputted key to a valid URL.
         
@@ -77,16 +68,16 @@ class UrlHandler(object):
         :return     (<str> url, <bool> exists)
         """
         logger.debug('Key not found', key)
-        return ('', False)
-    
-    def rootUrl( self ):
+        return '', False
+
+    def rootUrl(self):
         """
         Returns the root url for the handler.
         
         :return     <str>
         """
         return self._rootUrl
-    
+
     def staticUrl(self):
         """
         Returns the static url for this handler.
@@ -96,13 +87,13 @@ class UrlHandler(object):
         if not self._staticUrl:
             return self._rootUrl + '/_static'
         return self._staticUrl
-    
-    def setCurrent( self ):
+
+    def setCurrent(self):
         """
         Sets this handler as the current global instance.
         """
         UrlHandler._current = self
-    
+
     def setReplaceWikiSuffix(self, state):
         """
         Sets whether or not the .wiki format should be replaced with a
@@ -111,15 +102,15 @@ class UrlHandler(object):
         :param      state | <bool>
         """
         self._replaceWikiSuffix = state
-    
-    def setRootUrl( self, url ):
+
+    def setRootUrl(self, url):
         """
         Sets the root url for the url handler to the inputted url.
         
         :param      url | <str>
         """
         self._rootUrl = nstr(url)
-    
+
     def setStaticUrl(self, url):
         """
         Sets the static url for the handler to the inputted url.
@@ -127,7 +118,7 @@ class UrlHandler(object):
         :param      url | <str>
         """
         self._staticUrl = nstr(url)
-    
+
     @staticmethod
     def current():
         """
@@ -135,6 +126,6 @@ class UrlHandler(object):
         
         :return     <UrlHandler>
         """
-        if ( not UrlHandler._current ):
+        if not UrlHandler._current:
             UrlHandler._current = UrlHandler()
         return UrlHandler._current
