@@ -149,9 +149,9 @@ Table of contents can be created by specifying the toc key, as such:
 
     External:
     
-    <nowiki>[http://www.projexsoftware.com/ Projex Software]</nowiki>
+    <nowiki>[http://projexsoftware.github.io/ Projex Software]</nowiki>
     
-    [http://www.projexsoftware.com/ Projex Software]
+    [http://projexsoftware.github.io/ Projex Software]
     
     Internal:
     

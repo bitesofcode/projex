@@ -21,8 +21,8 @@ logger = logging.getLogger(__name__)
 <plugin name="Plugin Name" icon="./icon.png" version="1.0">
     <description>This is my description</description
     <author>Eric Hulser</author>
-    <email>team@projexsoftware.com</email>
-    <url>http://www.projexsoftware.com</url>
+    <email>eric.hulser@gmail.com</email>
+    <url>http://projexsoftware.github.io</url>
     <import path="./__init__.py"/>
 </plugin>
 """
