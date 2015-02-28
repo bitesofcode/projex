@@ -1,22 +1,7 @@
-#!/usr/bin/python
-
-""" 
+"""
 Defines the enum class type that can be used to generate 
 enumerated types 
 """
-
-# define authorship information
-__authors__ = ['Eric Hulser']
-__author__ = ','.join(__authors__)
-__credits__ = []
-__copyright__ = 'Copyright (c) 2011, Projex Software'
-__license__ = 'LGPL'
-
-# maintanence information
-__maintainer__ = 'Projex Software'
-__email__ = 'team@projexsoftware.com'
-
-# ------------------------------------------------------------------------------
 
 # use the text module from projex
 from projex import text

@@ -1,23 +1,9 @@
-#!/usr/bin/python
-
-""" 
+"""
 This is the core Python package for all of the projex software
 projects.  At the bare minimum, this package will be required, and 
 depending on which software you are interested in, other packages 
 will be required and updated.
 """
-
-# define authorship information
-__authors__         = ['Eric Hulser']
-__author__          = ','.join(__authors__)
-__credits__         = []
-__copyright__       = 'Copyright (c) 2011, Projex Software'
-__license__         = 'LGPL'
-
-__maintainer__      = 'Projex Software'
-__email__           = 'team@projexsoftware.com'
-
-#------------------------------------------------------------------------------
 
 __IMPORTED = set()
 
@@ -32,30 +18,29 @@ from .text import nativestring as nstr
 # initialize the main projex logger class
 logger = logging.getLogger(__name__)
 
-WEBSITES     = {
-    'home': 'http://www.projexsoftware.com',
-    'docs': 'http://docs.projexsoftware.com',
-    'blog': 'http://blog.projexsoftware.com',
-    'dev':  'http://dev.projexsoftware.com'
+WEBSITES = {
+    'home': 'http://projexsoftware.github.io',
+    'docs': 'http://projexsoftware.github.io',
+    'blog': 'http://projexsoftware.github.io/blog',
+    'dev': 'http://github.com/projexsoftware'
 }
 
 SUBCONTEXT_MAP = {
-    ('home', 'Product'):      '%(base_url)s/products/%(app)s',
-    ('docs', 'UserGuide'):    '%(base_url)s/userguide/%(app)s',
-    ('docs', 'APIReference'): 'http://api.projexsoftware.com/static/'\
-                              '%(app)s/current/index.html',
-    ('dev',  'Project'):      '%(base_url)s/projects/%(app)s',
-    ('dev',  'NewIssue'):     '%(base_url)s/projects/%(app)s/'\
-                              'issues/new?tracker_id=1',
-    ('dev',  'NewFeature'):   '%(base_url)s/projects/%(app)s/'\
-                              'issues/new?tracker_id=2',
+    ('home', 'Product'): '%(base_url)s/products/%(app)s',
+    ('docs', 'UserGuide'): '%(base_url)s/userguide/%(app)s',
+    ('docs', 'APIReference'): 'http://api.projexsoftware.com/static/%(app)s/current/index.html',
+    ('dev', 'Project'): '%(base_url)s/projects/%(app)s',
+    ('dev', 'NewIssue'): '%(base_url)s/projects/%(app)s/issues/new?tracker_id=1',
+    ('dev', 'NewFeature'): '%(base_url)s/projects/%(app)s/issues/new?tracker_id=2',
 }
+
 
 class attrdict(object):
     def __init__(self, data):
         self.__dict__.update(data)
 
-#------------------------------------------------------------------------------
+
+# ------------------------------------------------------------------------------
 
 def environ():
     """
@@ -64,7 +49,9 @@ def environ():
     :return     <projex.envmanager.EnvManager> || None
     """
     from projex.envmanager import EnvManager
+
     return EnvManager.current()
+
 
 def findmodules(path, recurse=False):
     """
@@ -85,28 +72,29 @@ def findmodules(path, recurse=False):
             pkgpath = os.path.join(root, folder, '__init__.py')
             if os.path.exists(pkgpath):
                 output.add(packageFromPath(pkgpath))
-        
+
         # add modules
         rootpth = packageRootPath(root)
         rootpkg = packageFromPath(root)
         roots.add(rootpth)
-        for file in files:
-            name, ext = os.path.splitext(file)
-            if not ext in ('.py', '.pyo', '.pyc'):
+        for file_ in files:
+            name, ext = os.path.splitext(file_)
+            if ext not in ('.py', '.pyo', '.pyc'):
                 continue
-            
+
             if name in ('__init__', '__plugins__'):
                 continue
-            
+
             if rootpkg:
                 output.add(rootpkg + '.' + name)
             else:
                 output.add(name)
-        
+
         if not recurse:
             break
-    
+
     return list(output), list(roots)
+
 
 def importfile(filename):
     """
@@ -118,12 +106,13 @@ def importfile(filename):
     """
     pkg = packageFromPath(filename, includeModule=True)
     root = packageRootPath(filename)
-    
-    if not root in sys.path:
+
+    if root not in sys.path:
         sys.path.insert(0, root)
-    
+
     __import__(pkg)
     return sys.modules[pkg]
+
 
 def importmodules(package_or_toc, ignore=None, recurse=False, silent=None):
     """
@@ -146,19 +135,17 @@ def importmodules(package_or_toc, ignore=None, recurse=False, silent=None):
     """
     if package_or_toc in __IMPORTED:
         return
-    
+
     __IMPORTED.add(package_or_toc)
-    
-    from projex.text import nativestring
-    
+
     if silent is None:
         silent = os.environ.get('PROJEX_LOG_IMPORTS', 'False').lower() != 'true'
-    
+
     toc = []
     output = []
     if ignore is None:
         ignore = []
-    
+
     # import from a set toc file
     if type(package_or_toc) in (str, unicode):
         # import a toc file
@@ -166,16 +153,16 @@ def importmodules(package_or_toc, ignore=None, recurse=False, silent=None):
             f = open(package_or_toc, 'r')
             toc = f.readlines()
             f.close()
-        
+
         # import from a directory
         elif os.path.isdir(package_or_toc):
             toc, paths = findmodules(package_or_toc, recurse=recurse)
             for path in paths:
                 if path in sys.path:
                     sys.path.remove(path)
-                
+
                 sys.path.insert(0, path)
-        
+
         # import a module by string
         else:
             use_sub_modules = False
@@ -205,11 +192,11 @@ def importmodules(package_or_toc, ignore=None, recurse=False, silent=None):
                         importmodules(package_or_toc + '.' + path)
             else:
                 return importmodules(module)
-    
+
     # import from a given package
     else:
         toc = getattr(package_or_toc, '__toc__', [])
-        
+
         if not toc:
             toc = []
             recurse = getattr(package_or_toc, '__recurse__', False)
@@ -220,39 +207,39 @@ def importmodules(package_or_toc, ignore=None, recurse=False, silent=None):
                     paths = [os.path.dirname(package_or_toc.__file__)]
                 except AttributeError:
                     paths = []
-                
+
             for path in paths:
                 data = findmodules(path, recurse=recurse)
                 toc += data[0]
-                for path in data[1]:
-                    if path in sys.path:
+                for sub_path in data[1]:
+                    if sub_path in sys.path:
                         sys.path.remove(path)
-                    
+
                     sys.path.insert(0, path)
-            
+
             setattr(package_or_toc, '__toc__', toc)
-    
+
     # import using standard means (successful for when dealing with 
     for modname in sorted(toc):
         # check against a callable ignore method
         if callable(ignore) and ignore(modname):
             continue
-        
+
         elif type(modname) in (list, tuple) and modname not in ignore:
             continue
-        
+
         # ignore preset options
         if modname.endswith('__init__'):
             continue
         elif modname.endswith('__plugins__'):
             continue
-        
+
         try:
             output.append(sys.modules[modname])
             continue
         except KeyError:
             pass
-        
+
         if not silent:
             logger.debug('Importing: %s' % modname)
         try:
@@ -263,10 +250,11 @@ def importmodules(package_or_toc, ignore=None, recurse=False, silent=None):
             if not silent:
                 logger.error('Error importing module: %s', modname)
                 logger.debug(traceback.print_exc())
-        
+
     return output
 
-def importobject( module_name, object_name ):
+
+def importobject(module_name, object_name):
     """
     Imports the object with the given name from the inputted module.
     
@@ -280,28 +268,29 @@ def importobject( module_name, object_name ):
     
     :return     <object> || None
     """
-    if not module_name in sys.modules:
+    if module_name not in sys.modules:
         try:
             __import__(module_name)
         except ImportError:
             logger.debug(traceback.print_exc())
             logger.error('Could not import module: %s', module_name)
             return None
-    
+
     module = sys.modules.get(module_name)
     if not module:
         logger.warning('No module %s found.' % module_name)
         return None
-    
+
     if not hasattr(module, object_name):
         logger.warning('No object %s in %s.' % (object_name, module_name))
         return None
-    
+
     return getattr(module, object_name)
+
 
 def packageRootPath(path):
     """
-    Retruns the root file path that defines a Python package from the inputted
+    Returns the root file path that defines a Python package from the inputted
     path.
     
     :param      path | <str>
@@ -311,21 +300,22 @@ def packageRootPath(path):
     path = nstr(path)
     if os.path.isfile(path):
         path = os.path.dirname(path)
-        
+
     parts = os.path.normpath(path).split(os.path.sep)
     package_parts = []
-    
+
     for i in range(len(parts), 0, -1):
         filename = os.path.sep.join(parts[:i] + ['__init__.py'])
-        
+
         if not os.path.isfile(filename):
             break
-        
-        package_parts.insert(0, parts[i-1])
-    
+
+        package_parts.insert(0, parts[i - 1])
+
     if not package_parts:
         return path
     return os.path.abspath(os.path.sep.join(parts[:-len(package_parts)]))
+
 
 def packageFromPath(path, includeModule=False):
     """
@@ -344,27 +334,29 @@ def packageFromPath(path, includeModule=False):
 
     parts = os.path.normpath(path).split(os.path.sep)
     package_parts = []
-    
+
     for i in range(len(parts), 0, -1):
         filename = os.path.sep.join(parts[:i] + ['__init__.py'])
-        
+
         if not os.path.isfile(filename):
             break
-        
-        package_parts.insert(0, parts[i-1])
-    
+
+        package_parts.insert(0, parts[i - 1])
+
     if includeModule and module:
         package_parts.append(module)
-    
+
     return '.'.join(package_parts)
 
-def refactor( module, name, repl ):
+
+def refactor(module, name, repl):
     """
     Convenience method for the EnvManager.refactor 
     """
-    environ().refactor( module, name, repl )
+    environ().refactor(module, name, repl)
 
-def requires( *modules ):
+
+def requires(*modules):
     """
     Convenience method to the EnvManager.current().requires method.
     
@@ -372,7 +364,8 @@ def requires( *modules ):
     """
     environ().requires(*modules)
 
-def website( app = None, mode = 'home', subcontext = 'UserGuide' ):
+
+def website(app=None, mode='home', subcontext='UserGuide'):
     """
     Returns the website location for projex software.
     
@@ -382,10 +375,10 @@ def website( app = None, mode = 'home', subcontext = 'UserGuide' ):
     :return     <str>
     """
     base_url = WEBSITES.get(mode, '')
-    
-    if ( app and base_url ):
-        opts      = {'app': app, 'base_url': base_url}
-        base_url  = SUBCONTEXT_MAP.get((mode, subcontext), base_url)
+
+    if app and base_url:
+        opts = {'app': app, 'base_url': base_url}
+        base_url = SUBCONTEXT_MAP.get((mode, subcontext), base_url)
         base_url %= opts
-        
+
     return base_url

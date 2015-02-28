@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 """ Defines an interface for turning methods into command line interface \
     options using optparse.
     
@@ -12,18 +10,6 @@
                 |   print 'here'
 """
 
-# define authorship information
-__authors__         = ['Eric Hulser']
-__author__          = ','.join(__authors__)
-__credits__         = []
-__copyright__       = 'Copyright (c) 2011, Projex Software'
-__license__         = 'LGPL'
-
-# maintanence information
-__maintainer__      = 'Projex Software'
-__email__           = 'team@projexsoftware.com'
-__all__             = [ 'abstractmethod', 'deprecatedmethod', 'profiler' ]
-
 import inspect
 import logging
 import sys
@@ -33,10 +19,11 @@ from optparse import OptionParser
 
 logger = logging.getLogger(__name__)
 
-PROGRAM_NAME    = '%prog'
-PARSER_CLASS    = OptionParser
+PROGRAM_NAME = '%prog'
+PARSER_CLASS = OptionParser
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+
 
 class climethod(object):
     """
@@ -46,6 +33,7 @@ class climethod(object):
     
     :param      usage | <str>
     """
+
     def __init__(self, func=None):
         self.__name__ = ''
         self.__doc__ = ''
@@ -54,54 +42,52 @@ class climethod(object):
         self.cmd_args = []
         self.cmd_opts = {'help': False}
         self.short_keys = {'h': 'help'}
-        
+
         if func is not None:
             self.setfunc(func)
 
     def setfunc(self, func):
         # initialize the function linking
-        self.__name__  = func.__name__
-        self.__doc__   = func.__doc__
-        self.func      = func
-        
+        self.__name__ = func.__name__
+        self.__doc__ = func.__doc__
+        self.func = func
+
         # process the optional arguments and keywords
         args, varargs, keywords, defaults = inspect.getargspec(func)
-        
+
         if not defaults:
             defaults = []
-        
+
         if defaults:
             keymap = args[-len(defaults):]
             for i, key in enumerate(keymap):
                 letter = 0
                 short = key[letter]
                 while True:
-                    if not short in self.short_keys:
+                    if short not in self.short_keys:
                         self.short_keys[short] = key
                         break
-                    
+
                     letter += 1
                     try:
                         short = key[letter]
                     except IndexError:
                         break
-                
+
                 self.cmd_opts[key] = defaults[i]
 
     def __call__(self, *args, **kwds):
         # used as the wrapper call
-        if self.func is None and \
-           len(args) == 1 and \
-           inspect.isfunction(args[0]):
+        if self.func is None and len(args) == 1 and inspect.isfunction(args[0]):
             self.setfunc(args[0])
             return self
-        
+
         elif self.func is None:
             raise NotImplementedError
-        
+
         # used as the caller
         return self.func(*args, **kwds)
-    
+
     def usage(self):
         """
         Returns the usage string for this method.
@@ -111,7 +97,7 @@ class climethod(object):
         arg_list = ' '.join(self.cmd_args).upper()
         name = self.interface.name()
         return '%s [options] %s %s' % (name, self.__name__, arg_list)
-    
+
     def parser(self):
         """
         Creates a parser for the method based on the documentation.
@@ -121,62 +107,64 @@ class climethod(object):
         usage = self.usage()
         if self.__doc__:
             usage += '\n' + nstr(self.__doc__)
-        
-        parser = PARSER_CLASS(usage=usage)
-        
+
+        parse = PARSER_CLASS(usage=usage)
+
         shorts = {v: k for k, v in self.short_keys.items()}
         for key, default in self.cmd_opts.items():
             # default key, cannot be duplicated
             if key == 'help':
                 continue
-            
+
             try:
                 short = '-' + shorts[key]
             except KeyError:
                 short = ''
-            
-            if default == True:
+
+            if default is True:
                 action = 'store_false'
-            elif default == False:
+            elif default is False:
                 action = 'store_true'
             else:
                 action = 'store'
 
             # add the option
-            parser.add_option(short, '--%s' % key, action=action, default=default)
-        
-        return parser
-    
+            parse.add_option(short, '--%s' % key, action=action, default=default)
+
+        return parse
+
     def run(self, argv):
         """
         Parses the inputted options and executes the method.
         
         :param      argv | [<str>, ..]
         """
-        (opts, args)    = self.parser().parse_args(argv)
-        func_args       = args[args.index(self.__name__)+1:]
-        func_kwds       = opts.__dict__
-        
+        (opts, args) = self.parser().parse_args(argv)
+        func_args = args[args.index(self.__name__) + 1:]
+        func_kwds = opts.__dict__
+
         try:
             return self.__call__(*func_args, **func_kwds)
-            
+
         except TypeError, e:
             logger.error(e)
             return 1
 
-#----------------------------------------------------------------------
+
+# ----------------------------------------------------------------------
 
 class cliignore(object):
     def __init__(self, func):
-        self.__name__  = func.__name__
-        self.__doc__   = func.__doc__
-        self.func      = func
+        self.__name__ = func.__name__
+        self.__doc__ = func.__doc__
+        self.func = func
         self.interface = None
-        
+
         self.short_keys = {}
-        
+
     def __call__(self, *args, **kwds):
         return self.func(*args, **kwds)
+
 
 #-------------------------------------------------------------------------------
 
@@ -184,10 +172,10 @@ class Interface(object):
     def __init__(self, name, scope=None):
         if scope is None:
             scope = {}
-        
+
         self._name = name
         self._scope = scope
-    
+
     def process(self, argv):
         """
         Processes the inputted arguments within this object's scope.
@@ -203,7 +191,7 @@ class Interface(object):
         :param      obj | <module> || <function> || <climethod>
         """
         scope = self._scope
-        
+
         # register a module
         if type(obj).__name__ == 'module':
             for key, value in vars(obj).items():
@@ -211,24 +199,23 @@ class Interface(object):
                 if isinstance(value, climethod):
                     value.interface = self
                     scope[key] = value
-                
+
                 # register a function
                 elif inspect.isfunction(value) and autogenerate:
                     meth = climethod(value)
                     meth.interface = self
                     scope[key] = meth
-        
+
         # register a climethod
         elif isinstance(obj, climethod):
             obj.interface = self
             scope[obj.__name__] = obj
-        
+
         # register a function
         elif inspect.isfunction(obj) and autogenerate:
             meth = climethod(obj)
             meth.interface = self
             scope[meth.__name__] = meth
-        
 
     def name(self):
         """
@@ -246,6 +233,7 @@ class Interface(object):
         """
         self._name = name
 
+
 #-------------------------------------------------------------------------------
 
 def command(argv, scope):
@@ -258,16 +246,17 @@ def command(argv, scope):
     
     :return     <climethod> || None
     """
-    if ( inspect.ismodule(scope) ):
+    if inspect.ismodule(scope):
         scope = vars(scope)
-    
+
     for cmd in scope.values():
-        if ( not isinstance(cmd, climethod) ):
+        if not isinstance(cmd, climethod):
             continue
-            
-        if ( cmd.__name__ in argv ):
+
+        if cmd.__name__ in argv:
             return cmd
     return None
+
 
 def commands(scope):
     """
@@ -275,10 +264,11 @@ def commands(scope):
     
     :return     [<climethod>, ..]
     """
-    if ( inspect.ismodule(scope) ):
+    if inspect.ismodule(scope):
         scope = vars(scope)
-        
+
     return [cmd for cmd in scope.values() if isinstance(cmd, climethod)]
+
 
 def generate(module):
     """
@@ -291,6 +281,7 @@ def generate(module):
     inter = Interface(PROGRAM_NAME)
     inter.register(module, True)
     return inter
+
 
 def parser(scope, usage=''):
     """
@@ -305,15 +296,16 @@ def parser(scope, usage=''):
     subcmds = []
     for cmd in commands(scope):
         subcmds.append(cmd.usage())
-    
+
     if subcmds:
         subcmds.sort()
         usage += '\n\nSub-Commands:\n  '
         usage += '\n  '.join(subcmds)
-    
-    parser = PARSER_CLASS(usage = usage)
-    parser.prog = PROGRAM_NAME
-    return parser
+
+    parse = PARSER_CLASS(usage=usage)
+    parse.prog = PROGRAM_NAME
+    return parse
+
 
 def process(argv, scope, interface=None):
     """
@@ -329,11 +321,11 @@ def process(argv, scope, interface=None):
     cmd = command(argv, scope)
     if cmd:
         sys.exit(cmd.run(argv))
-    
+
     name = PROGRAM_NAME
     if interface:
         name = interface.name()
-    
+
     _parser = parser(scope, '{0} [options] [<subcommand>] [<arg>]'.format(name))
     options, args = _parser.parse_args(argv)
-    return (options.__dict__, args)
+    return options.__dict__, args

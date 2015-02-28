@@ -1,18 +1,4 @@
-#!/usr/bin/python
-
 """ Generic signal/slot callback system. """
-
-# define authorship information
-__authors__         = ['Eric Hulser']
-__author__          = ','.join(__authors__)
-__credits__         = []
-__copyright__       = 'Copyright (c) 2011, Projex Software'
-__license__         = 'LGPL'
-
-# maintanence information
-__maintainer__      = 'Projex Software'
-__email__           = 'team@projexsoftware.com'
-__all__             = [ 'abstractmethod', 'deprecatedmethod', 'profiler' ]
 
 import inspect
 import logging
@@ -20,31 +6,30 @@ import weakref
 
 logger = logging.getLogger(__name__)
 
+
 class Callback(object):
     def __init__(self, slot):
         self._callback_func_ref = None
         self._callback_self_ref = None
-        
+
         if inspect.ismethod(slot):
             self._callback_func_ref = weakref.ref(slot.im_func)
             self._callback_self_ref = weakref.ref(slot.im_self)
         else:
             self._callback_func_ref = weakref.ref(slot)
-    
+
     def __eq__(self, other):
-        ref_cmp = (None, None)
-        
         if isinstance(other, Callback):
             ref_cmp = (other._callback_func_ref, other._callback_self_ref)
-        
+
         elif inspect.ismethod(other):
             ref_cmp = (weakref.ref(other.im_func), weakref.ref(other.im_self))
-        
+
         else:
             ref_cmp = (weakref.ref(other), -1)
-        
+
         return (self._callback_func_ref, self._callback_self_ref) == ref_cmp
-    
+
     def __call__(self, *args):
         """
         Calls this callback with the inputted arguments by accessing its stored
@@ -54,19 +39,19 @@ class Callback(object):
         """
         if self._callback_func_ref is None:
             return
-        
+
         callback_func = self._callback_func_ref()
-        
+
         # call a reference with a pointer
         if self._callback_self_ref is not None:
             callback_self = self._callback_self_ref()
             if callback_self is None:
                 return
-            
+
             return callback_func(callback_self, *args)
         else:
             return callback_func(*args)
-    
+
     def isValid(self):
         """
         Checks to see if the callback pointers are still valid or not.
@@ -78,12 +63,13 @@ class Callback(object):
                 return True
         return False
 
-#----------------------------------------------------------------------
+
+# ----------------------------------------------------------------------
 
 class CallbackSet(object):
     def __init__(self):
         self._callbacks = {}
-    
+
     def callbacks(self, signal):
         """
         Returns a list of the callbacks associated with a given key.
@@ -93,7 +79,7 @@ class CallbackSet(object):
         :return     [<Callback>, ..]
         """
         return self._callbacks.get(signal, [])
-    
+
     def clear(self, signal=None):
         """
         Clears either all the callbacks or the callbacks for a particular
@@ -105,7 +91,7 @@ class CallbackSet(object):
             self._callbacks.pop(signal, None)
         else:
             self._callbacks.clear()
-    
+
     def connect(self, signal, slot):
         """
         Creates a new connection between the inputted signal and slot.
@@ -117,12 +103,12 @@ class CallbackSet(object):
         """
         if self.isConnected(signal, slot):
             return False
-        
+
         callback = Callback(slot)
         self._callbacks.setdefault(signal, [])
         self._callbacks[signal].append(callback)
         return True
-    
+
     def disconnect(self, signal, slot):
         """
         Breaks the connection between the inputted signal and the given slot.
@@ -138,7 +124,7 @@ class CallbackSet(object):
                 sig_calls.remove(callback)
                 return True
         return False
-    
+
     def isConnected(self, signal, slot):
         """
         Returns if the given signal is connected to the inputted slot.
@@ -153,7 +139,7 @@ class CallbackSet(object):
             if callback == slot:
                 return True
         return False
-    
+
     def emit(self, signal, *args):
         """
         Emits the given signal with the inputted args.  This will go through
@@ -168,12 +154,12 @@ class CallbackSet(object):
             # clear out deleted pointers
             if not callback.isValid():
                 continue
-            
+
             new_callbacks.append(callback)
-            
+
             try:
                 callback(*args)
-            except:
+            except StandardError:
                 logger.exception('Error occurred during callback.')
-        
+
         self._callbacks[signal] = new_callbacks

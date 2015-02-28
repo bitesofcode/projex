@@ -1,4 +1,3 @@
-#!/usr/bin/python
 """
 The hooks module will provide an API to assigning multiple hooks to
 Python's internal exception and logging calls.  This will utilize the
@@ -23,17 +22,6 @@ exceptions and printed values as well.
             |>>> hooks.registerExcept(email_error)
 """
 
-# define authorship information
-__authors__         = ['Eric Hulser']
-__author__          = ','.join(__authors__)
-__credits__         = []
-__copyright__       = 'Copyright (c) 2011, Projex Software'
-__license__         = 'LGPL'
-
-# maintanence information
-__maintainer__      = 'Projex Software'
-__email__           = 'team@projexsoftware.com'
-
 import weakref
 import sys
 import traceback
@@ -41,10 +29,12 @@ import traceback
 _displayhooks = None
 _excepthooks = None
 
+
 class StreamHooks(object):
     """
     Basic class to wrap the sys stream system.
     """
+
     def __getattr__(self, key):
         try:
             return getattr(self.stream, key)
@@ -68,21 +58,22 @@ class StreamHooks(object):
         # write to the original stream
         try:
             self.stream.write(text)
-        except:
+        except StandardError:
             pass
 
-#----------------------------------------------------------------------
+
+# ----------------------------------------------------------------------
 
 def displayhook(value):
     """
-    Runs all of the registerd display hook methods with the given value.
+    Runs all of the registered display hook methods with the given value.
     Look at the sys.displayhook documentation for more information.
     
     :param      value | <variant>
     """
     global _displayhooks
     new_hooks = []
-    
+
     for hook_ref in _displayhooks:
         hook = hook_ref()
         if hook:
@@ -93,9 +84,10 @@ def displayhook(value):
 
     sys.__displayhook__(value)
 
+
 def excepthook(cls, error, trace):
     """
-    Runs all of the registerd exception hook methods with the given value.
+    Runs all of the registered exception hook methods with the given value.
     Look at the sys.excepthook documentation for more information.
     
     :param      cls     | <type>
@@ -104,7 +96,7 @@ def excepthook(cls, error, trace):
     """
     global _excepthooks
     new_hooks = []
-    
+
     for hook_ref in _excepthooks:
         hook = hook_ref()
         if hook:
@@ -113,6 +105,7 @@ def excepthook(cls, error, trace):
 
     _excepthook = new_hooks
     sys.__excepthook__(cls, error, trace)
+
 
 def formatExcept(cls, error, trace):
     """
@@ -126,10 +119,11 @@ def formatExcept(cls, error, trace):
     :return     <str>
     """
     clsname = cls.__name__ if cls else 'UnknownError'
-    tb  = 'Traceback (most recent call last):\n'
+    tb = 'Traceback (most recent call last):\n'
     tb += ''.join(traceback.format_tb(trace))
     tb += '{0}: {1}'.format(clsname, error)
     return tb
+
 
 def registerDisplay(func):
     """
@@ -140,8 +134,9 @@ def registerDisplay(func):
     """
     setup()
     ref = weakref.ref(func)
-    if not ref in _displayhooks:
+    if ref not in _displayhooks:
         _displayhooks.append(ref)
+
 
 def registerExcept(func):
     """
@@ -152,8 +147,9 @@ def registerExcept(func):
     """
     setup()
     ref = weakref.ref(func)
-    if not ref in _excepthooks:
+    if ref not in _excepthooks:
         _excepthooks.append(ref)
+
 
 def registerStdErr(func):
     """
@@ -171,6 +167,7 @@ def registerStdErr(func):
     if ref not in sys.stderr.hooks:
         sys.stderr.hooks.append(ref)
 
+
 def registerStdOut(func):
     """
     Registers a function to the print hook queue to be called on hook.
@@ -186,6 +183,7 @@ def registerStdOut(func):
     ref = weakref.ref(func)
     if ref not in sys.stdout.hooks:
         sys.stdout.hooks.append(ref)
+
 
 def setup():
     """
@@ -211,6 +209,7 @@ def setup():
     sys.displayhook = displayhook
     sys.excepthook = excepthook
 
+
 def unregisterDisplay(func):
     """
     Un-registers a function from the display hook queue.
@@ -222,6 +221,7 @@ def unregisterDisplay(func):
         _displayhooks.remove(weakref.ref(func))
     except ValueError:
         pass
+
 
 def unregisterExcept(func):
     """
@@ -235,6 +235,7 @@ def unregisterExcept(func):
     except (AttributeError, ValueError):
         pass
 
+
 def unregisterStdErr(func):
     """
     Un-registers a function from the print hook queue.
@@ -246,6 +247,7 @@ def unregisterStdErr(func):
         sys.stderr.hooks.remove(weakref.ref(func))
     except (AttributeError, ValueError):
         pass
+
 
 def unregisterStdOut(func):
     """

@@ -1,17 +1,6 @@
 """ Defines date methods and helpers for manipulating date information. """
 
-# define authorship information
-__authors__ = ['Eric Hulser']
-__author__ = ','.join(__authors__)
-__credits__ = []
-__copyright__ = 'Copyright (c) 2011, Projex Software, LLC'
-__license__ = 'LGPL'
-
-__maintainer__ = 'Projex Software, LLC'
-__email__ = 'team@projexsoftware.com'
-
 import datetime
-import projex.text
 
 from projex.enum import enum
 
@@ -107,7 +96,7 @@ def addMonths(date, months):
 
     elif 12 < month:
         years += 1
-        month = month % 12
+        month %= 12
 
     # calculate the new year
     year = date.year + years
@@ -179,9 +168,8 @@ def daysInYear(date):
     return 365
 
 
-def displayName(date,
-                options=None,
-                format='%b %d, %Y'):
+# noinspection PyUnusedLocal
+def displayName(date, options=None, format='%b %d, %Y'):
     """
     Returns the display name for the inputted date, given the list of options.
     
@@ -239,7 +227,7 @@ def pretty(source, reference=None):
                                      now.second)
 
         elif type(value) == datetime.time:
-            today = datetime.date.today
+            today = datetime.date.today()
             return datetime.datetime(today.year,
                                      today.month,
                                      today.day,
@@ -420,7 +408,7 @@ def repeating(first,
               maximum=None):
     """
     Returns a list of repeating dates from the inputted start date based on the
-    given mode.  If an repeatUnail date is supplied, then the results will be 
+    given mode.  If an repeatUntil date is supplied, then the results will be
     capped once the last date is reached, otherwise, the maximum number of
     results will be returned.
     
@@ -556,7 +544,6 @@ def weekdays(start, end):
     elif end < start:
         return -weekdays(end, start)
     else:
-        remainder = 0
         strt_weekday = start.isoweekday()
         end_weekday = end.isoweekday()
 
