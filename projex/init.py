@@ -28,7 +28,7 @@ WEBSITES = {
 SUBCONTEXT_MAP = {
     ('home', 'Product'): '%(base_url)s/products/%(app)s',
     ('docs', 'UserGuide'): '%(base_url)s/userguide/%(app)s',
-    ('docs', 'APIReference'): 'http://api.projexsoftware.com/static/%(app)s/current/index.html',
+    ('docs', 'APIReference'): 'http://github.com/projexsoftware',
     ('dev', 'Project'): '%(base_url)s/projects/%(app)s',
     ('dev', 'NewIssue'): '%(base_url)s/projects/%(app)s/issues/new?tracker_id=1',
     ('dev', 'NewFeature'): '%(base_url)s/projects/%(app)s/issues/new?tracker_id=2',
