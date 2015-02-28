@@ -1,24 +1,15 @@
 """ Defines common and useful methods for version comparison. """
 
-# define authorship information
-__authors__         = ['Eric Hulser']
-__author__          = ','.join(__authors__)
-__credits__         = []
-__copyright__       = 'Copyright (c) 2014, Projex Software, LLC'
-__license__         = 'GPL'
-
-__maintainer__      = 'Projex Software, LLC'
-__email__           = 'team@projexsoftware.com'
-
 import re
 
 from .sorting import natural as vercmp
 from . import errors
 
+
 def validate(version, comparison):
     """
     Returns whether or not the version for this plugin satisfies the
-    inputted expression.  The expression will follow the depencency
+    inputted expression.  The expression will follow the dependency
     declaration rules associated with setuptools in Python.  More
     information can be found at
     

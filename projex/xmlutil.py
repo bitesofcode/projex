@@ -2,22 +2,13 @@
 Defines helper methods to XML.
 """
 
-# define authorship information
-__authors__         = ['Eric Hulser', 'Michael Hale Ligh']
-__author__          = ','.join(__authors__)
-__credits__         = []
-__copyright__       = 'Copyright (c) 2011, Projex Software, LLC'
-__license__         = 'LGPL'
-
-__maintainer__      = 'Projex Software, LLC'
-__email__           = 'team@projexsoftware.com'
-
 from collections import OrderedDict
 from xml.etree import ElementTree
 
 from .addon import AddonManager
 from .decorators import abstractmethod
 from .text import nativestring as nstr
+
 
 class XmlObject(AddonManager):
     def __init__(self):
@@ -122,13 +113,15 @@ class XmlObject(AddonManager):
         """
         return XmlDataIO
 
+
 class MissingXmlObject(XmlObject):
     def __init__(self, missingType):
         super(MissingXmlObject, self).__init__()
 
         self.setXmlData('missingType', missingType)
 
-#----------------------------------------------------------------------
+
+# ----------------------------------------------------------------------
 
 class XmlDataIO(AddonManager):
     @abstractmethod('XmlDataIO', 'No load method defined.')
@@ -154,7 +147,8 @@ class XmlDataIO(AddonManager):
         """
         return None
 
-    def testTag(self, elem, tag):
+    @staticmethod
+    def testTag(elem, tag):
         """
         Tests the element's tag to make sure it matches the inputted one.  If
         it fails, a RuntimeError will be raised.
@@ -182,11 +176,11 @@ class XmlDataIO(AddonManager):
         """
         if elem is None:
             return None
-        
+
         addon = cls.byName(elem.tag)
         if not addon:
-            raise RuntimeError, '{0} is not a supported XML tag'.format(elem.tag)
-        
+            raise RuntimeError('{0} is not a supported XML tag'.format(elem.tag))
+
         return addon.load(elem)
 
     @classmethod
@@ -203,7 +197,7 @@ class XmlDataIO(AddonManager):
         if data is None:
             return None
 
-        # store XmlObjects seperately from base types
+        # store XmlObjects separately from base types
         if isinstance(data, XmlObject):
             name = 'object'
         else:
@@ -211,12 +205,13 @@ class XmlDataIO(AddonManager):
 
         addon = cls.byName(name)
         if not addon:
-            raise RuntimeError, '{0} is not a supported XML tag'.format(name)
-        
+            raise RuntimeError('{0} is not a supported XML tag'.format(name))
+
         return addon.save(data, xparent)
 
+
 # B
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
 
 class BoolIO(XmlDataIO):
     def load(self, elem):
@@ -243,14 +238,16 @@ class BoolIO(XmlDataIO):
             elem = ElementTree.SubElement(xparent, 'bool')
         else:
             elem = ElementTree.Element('bool')
-        
+
         elem.text = nstr(data)
         return elem
+
 
 XmlDataIO.registerAddon('bool', BoolIO())
 
 # D
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+
 
 class DictIO(XmlDataIO):
     def load(self, elem):
@@ -262,7 +259,7 @@ class DictIO(XmlDataIO):
         :return     <dict>
         """
         self.testTag(elem, 'dict')
-        
+
         out = {}
         for xitem in elem:
             key = xitem.get('key')
@@ -286,18 +283,20 @@ class DictIO(XmlDataIO):
             elem = ElementTree.SubElement(xparent, 'dict')
         else:
             elem = ElementTree.Element('dict')
-        
+
         for key, value in sorted(data.items()):
             xitem = ElementTree.SubElement(elem, 'item')
             xitem.set('key', nstr(key))
             XmlDataIO.toXml(value, xitem)
-        
+
         return elem
+
 
 XmlDataIO.registerAddon('dict', DictIO())
 
 # F
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+
 
 class FloatIO(XmlDataIO):
     def load(self, elem):
@@ -324,14 +323,16 @@ class FloatIO(XmlDataIO):
             elem = ElementTree.SubElement(xparent, 'float')
         else:
             elem = ElementTree.Element('float')
-        
+
         elem.text = nstr(data)
         return elem
+
 
 XmlDataIO.registerAddon('float', FloatIO())
 
 # I
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+
 
 class IntegerIO(XmlDataIO):
     def load(self, elem):
@@ -358,14 +359,16 @@ class IntegerIO(XmlDataIO):
             elem = ElementTree.SubElement(xparent, 'int')
         else:
             elem = ElementTree.Element('int')
-        
+
         elem.text = nstr(data)
         return elem
+
 
 XmlDataIO.registerAddon('int', IntegerIO())
 
 # L
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+
 
 class ListIO(XmlDataIO):
     def load(self, elem):
@@ -395,16 +398,18 @@ class ListIO(XmlDataIO):
             elem = ElementTree.SubElement(xparent, 'list')
         else:
             elem = ElementTree.Element('list')
-        
+
         for item in data:
             XmlDataIO.toXml(item, elem)
-        
+
         return elem
+
 
 XmlDataIO.registerAddon('list', ListIO())
 
 # O
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+
 
 class ObjectIO(XmlDataIO):
     def load(self, elem):
@@ -430,7 +435,9 @@ class ObjectIO(XmlDataIO):
         """
         return data.toXml(xparent)
 
+
 XmlDataIO.registerAddon('object', ObjectIO())
+
 
 class OrderedDictIO(XmlDataIO):
     def load(self, elem):
@@ -442,7 +449,7 @@ class OrderedDictIO(XmlDataIO):
         :return     <OrderedDict>
         """
         self.testTag(elem, 'OrderedDict')
-        
+
         out = OrderedDict()
         for xitem in elem:
             key = xitem.get('key')
@@ -466,18 +473,20 @@ class OrderedDictIO(XmlDataIO):
             elem = ElementTree.SubElement(xparent, 'OrderedDict')
         else:
             elem = ElementTree.Element('OrderedDict')
-        
+
         for key, value in sorted(data.items()):
             xitem = ElementTree.SubElement(elem, 'item')
             xitem.set('key', nstr(key))
             XmlDataIO.toXml(value, xitem)
-        
+
         return elem
+
 
 XmlDataIO.registerAddon('OrderedDict', OrderedDictIO())
 
 # S
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+
 
 class SetIO(XmlDataIO):
     def load(self, elem):
@@ -507,13 +516,15 @@ class SetIO(XmlDataIO):
             elem = ElementTree.SubElement(xparent, 'set')
         else:
             elem = ElementTree.Element('set')
-        
+
         for item in data:
             XmlDataIO.toXml(item, elem)
-        
+
         return elem
 
+
 XmlDataIO.registerAddon('set', SetIO())
+
 
 class StringIO(XmlDataIO):
     def load(self, elem):
@@ -540,14 +551,16 @@ class StringIO(XmlDataIO):
             elem = ElementTree.SubElement(xparent, 'str')
         else:
             elem = ElementTree.Element('str')
-        
+
         elem.text = nstr(data)
         return elem
+
 
 XmlDataIO.registerAddon('str', StringIO())
 
 # T
 #----------------------------------------------------------------------
+
 
 class TupleIO(XmlDataIO):
     def load(self, elem):
@@ -577,10 +590,11 @@ class TupleIO(XmlDataIO):
             elem = ElementTree.SubElement(xparent, 'tuple')
         else:
             elem = ElementTree.Element('tuple')
-        
+
         for item in data:
             XmlDataIO.toXml(item, elem)
-        
+
         return elem
+
 
 XmlDataIO.registerAddon('tuple', TupleIO())

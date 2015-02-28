@@ -10,6 +10,7 @@ import threading
 
 log = logging.getLogger(__name__)
 
+
 class _MutexSwitcher(object):
     """An auxiliary "light switch"-like object. The first thread turns on the
     "switch", the last one turns it off (see [1, sec. 4.2.2] for details)."""
@@ -30,6 +31,7 @@ class _MutexSwitcher(object):
         if self.__counter == 0:
             lock.release()
         self.__mutex.release()
+
 
 class ReadWriteLock(object):
     """

@@ -1,19 +1,7 @@
-#!/usr/bin/python
-
-""" 
+"""
 Provides additional utilities for data transfer using REST interfaces,
 specifically helpers for converting between Python and JSON formats.
 """
-
-# define authorship information
-__authors__         = ['Eric Hulser']
-__author__          = ','.join(__authors__)
-__credits__         = []
-__copyright__       = 'Copyright (c) 2011, Projex Software'
-__license__         = 'LGPL'
-
-__maintainer__      = 'Projex Software'
-__email__           = 'team@projexsoftware.com'
 
 import datetime
 import logging
@@ -29,7 +17,7 @@ except ImportError:
     try:
         import simplejson as json
     except ImportError:
-        json is None
+        json = None
 
 try:
     import pytz
@@ -43,7 +31,8 @@ _decoders = []
 
 RESPONSE_FORMATS = {}
 
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+
 
 class JSONObject(object):
     def __init__(self, **data):
@@ -61,7 +50,8 @@ class JSONObject(object):
                 out[k] = v
         return out
 
-#----------------------------------------------------------------------
+
+# ----------------------------------------------------------------------
 
 def json2py(json_obj):
     """
@@ -72,7 +62,7 @@ def json2py(json_obj):
     for key, value in json_obj.items():
         if type(value) not in (str, unicode):
             continue
-                
+
         # restore a datetime
         if re.match('^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}:\d+$', value):
             value = datetime.datetime.strptime(value, '%Y-%m-%d %H:%M:%S:%f')
@@ -90,12 +80,13 @@ def json2py(json_obj):
                     value = new_value
                     found = True
                     break
-            
+
             if not found:
                 continue
-        
+
         json_obj[key] = value
     return json_obj
+
 
 def jsonify(py_data, default=None, indent=4, sort_keys=True):
     """
@@ -104,6 +95,7 @@ def jsonify(py_data, default=None, indent=4, sort_keys=True):
     :param      py_data | <variant>
     """
     return json.dumps(py_data, default=py2json, indent=indent, sort_keys=sort_keys)
+
 
 def py2json(py_obj):
     """
@@ -125,9 +117,10 @@ def py2json(py_obj):
             success, value = encoder(py_obj)
             if success:
                 return value
-        
+
         opts = (py_obj, type(py_obj))
         raise TypeError('Unserializable object {} of type {}'.format(*opts))
+
 
 def register(encoder=None, decoder=None):
     """
@@ -145,6 +138,7 @@ def register(encoder=None, decoder=None):
     if decoder:
         _decoders.append(decoder)
 
+
 def response(py_data, format='json'):
     """
     Converts the inputted python data to a given format.  Valid formats can
@@ -158,6 +152,7 @@ def response(py_data, format='json'):
     """
     return RESPONSE_FORMATS[format](py_data)
 
+
 def unjsonify(json_data):
     """
     Converts the inputted JSON data to Python format.
@@ -166,9 +161,10 @@ def unjsonify(json_data):
     """
     return json.loads(json_data, object_hook=json2py)
 
+
 def xmlresponse(py_data):
     """
-    Generates an XML formated method repsonse for the given python
+    Generates an XML formatted method response for the given python
     data.
     
     :param      py_data | <variant>
@@ -176,7 +172,7 @@ def xmlresponse(py_data):
     xroot = ElementTree.Element('methodResponse')
     xparams = ElementTree.SubElement(xroot, 'params')
     xparam = ElementTree.SubElement(xparams, 'param')
-    
+
     type_map = {'bool': 'boolean',
                 'float': 'double',
                 'str': 'string',
@@ -184,7 +180,7 @@ def xmlresponse(py_data):
                 'datetime': 'dateTime.iso8601',
                 'date': 'date.iso8601',
                 'time': 'time.iso8601'}
-    
+
     def xobj(xparent, py_obj):
         # convert a list of information
         if type(py_obj) in (tuple, list):
@@ -193,7 +189,7 @@ def xmlresponse(py_data):
             for val in py_obj:
                 xval = ElementTree.SubElement(xdata, 'value')
                 xobj(xval, val)
-        
+
         # convert a dictionary of information
         elif type(py_obj) == dict:
             xstruct = ElementTree.SubElement(xparent, 'struct')
@@ -203,44 +199,44 @@ def xmlresponse(py_data):
                 xname.text = key
                 xval = ElementTree.SubElement(xmember, 'value')
                 xobj(xval, val)
-        
+
         # convert a None value
         elif py_obj is None:
             ElementTree.SubElement(xparent, 'nil')
-        
+
         # convert a basic value
         else:
             typ = type(py_obj).__name__
             typ = type_map.get(typ, typ)
             xitem = ElementTree.SubElement(xparent, typ)
-            
+
             # convert a datetime/date/time
             if isinstance(py_obj, datetime.date) or \
-               isinstance(py_obj, datetime.time) or \
-               isinstance(py_obj, datetime.datetime):
-                
+                    isinstance(py_obj, datetime.time) or \
+                    isinstance(py_obj, datetime.datetime):
+
                 if py_obj.tzinfo and pytz:
                     data = py_obj.astimezone(pytz.utc).replace(tzinfo=None)
                     xitem.text = data.isoformat()
                 else:
                     xitem.text = py_obj.isoformat()
-            
+
             # convert a boolean
             elif type(py_obj) == bool:
                 xitem.text = nstr(int(py_obj))
-            
+
             # convert a non-string object
             elif not type(py_obj) in (str, unicode):
                 xitem.text = nstr(py_obj)
-            
+
             # convert a string object
             else:
                 xitem.text = py_obj
-    
+
     xobj(xparam, py_data)
     projex.text.xmlindent(xroot)
     return ElementTree.tostring(xroot)
-    
+
 
 RESPONSE_FORMATS['json'] = jsonify
 RESPONSE_FORMATS['xml'] = xmlresponse

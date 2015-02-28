@@ -1,23 +1,8 @@
-#!/usr/bin/python
-
-""" 
+"""
 Encryption module for encrypting and testing information. If you want to
 properly use this module for safest encryption, you will need to download
 the PyCrypto module.
 """
-
-# define authorship information
-__authors__         = ['Eric Hulser']
-__author__          = ','.join(__authors__)
-__credits__         = []
-__copyright__       = 'Copyright (c) 2011, Projex Software'
-__license__         = 'LGPL'
-
-# maintanence information
-__maintainer__      = 'Projex Software'
-__email__           = 'team@projexsoftware.com'
-
-#------------------------------------------------------------------------------
 
 import base64
 import hashlib
@@ -36,26 +21,21 @@ try:
     from Crypto.Cipher import AES
     from Crypto.PublicKey import RSA
     from Crypto import Random
-    
+
 except ImportError:
-    warn = 'The PyCrypto module was not found.  It is highly recommended for '\
-           'security purposes to download and install this module for use '\
+    warn = 'The PyCrypto module was not found.  It is highly recommended for ' \
+           'security purposes to download and install this module for use ' \
            ' with the security module.'
-           
+
     logger.warning(warn)
     AES = None
     Random = None
+    RSA = None
 
-
-# applications that use encryption should define their own encryption key
-# and assign it to this value - this will need to be the same size as the
-# block size
-ENCRYPT_KEY = ''
-
-
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
 #                              FUNCTIONS
-#----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+
 
 def check(a, b):
     """
@@ -68,8 +48,9 @@ def check(a, b):
     """
     aencrypt = encrypt(a)
     bencrypt = encrypt(b)
-    
-    return (a == b or a == bencrypt or aencrypt == b)
+
+    return a == b or a == bencrypt or aencrypt == b
+
 
 def decodeBase64(text, encoding='utf-8'):
     """
@@ -83,6 +64,7 @@ def decodeBase64(text, encoding='utf-8'):
     text = projex.text.toBytes(text, encoding)
     return projex.text.toUnicode(base64.b64decode(text), encoding)
 
+
 def decrypt(text, key=None):
     """
     Decrypts the inputted text using the inputted key.
@@ -94,14 +76,15 @@ def decrypt(text, key=None):
     """
     if key is None:
         key = ENCRYPT_KEY
-    
+
     bits = len(key)
     text = base64.b64decode(text)
     iv = text[:16]
     cipher = AES.new(key, AES.MODE_CBC, iv)
     return unpad(cipher.decrypt(text[16:]))
 
-def decryptfile(filename, key=None, outfile=None, chunk=64*1024):
+
+def decryptfile(filename, key=None, outfile=None, chunk=64 * 1024):
     """
     Decrypts a file using AES (CBC mode) with the given key.  If no
     file is supplied, then the inputted file will be modified in place.
@@ -116,25 +99,26 @@ def decryptfile(filename, key=None, outfile=None, chunk=64*1024):
     """
     if key is None:
         key = ENCRYPT_KEY
-    
+
     if not outfile:
         outfile = os.path.splitext(filename)[0]
-    
+
     with open(filename, 'rb') as input:
         origsize = struct.unpack('<Q', input.read(struct.calcsize('Q')))[0]
         iv = input.read(16)
         cipher = AES.new(key, AES.MODE_CBC, iv)
-        
+
         with open(outfile, 'wb') as output:
             while True:
                 data = input.read(chunk)
                 if len(data) == 0:
                     break
-                
+
                 data = cipher.decrypt(data)
                 data = unpad(data)
                 output.write(data)
                 output.truncate(origsize)
+
 
 def encodeBase64(text, encoding='utf-8'):
     """
@@ -147,6 +131,7 @@ def encodeBase64(text, encoding='utf-8'):
     """
     text = projex.text.toBytes(text, encoding)
     return base64.b64encode(text)
+
 
 def encrypt(text, key=None):
     """
@@ -161,14 +146,15 @@ def encrypt(text, key=None):
     """
     if key is None:
         key = ENCRYPT_KEY
-    
+
     bits = len(key)
     text = pad(text, bits)
     iv = Random.new().read(16)
     cipher = AES.new(key, AES.MODE_CBC, iv)
     return base64.b64encode(iv + cipher.encrypt(text))
 
-def encryptfile(filename, key=None, outfile=None, chunk=64*1024):
+
+def encryptfile(filename, key=None, outfile=None, chunk=64 * 1024):
     """
     Encrypts a file using AES (CBC mode) with the given key.  If no
     file is supplied, then the inputted file will be modified in place.
@@ -183,26 +169,27 @@ def encryptfile(filename, key=None, outfile=None, chunk=64*1024):
     """
     if key is None:
         key = ENCRYPT_KEY
-    
+
     if not outfile:
         outfile = filename + '.enc'
-    
+
     iv = Random.new().read(16)
     cipher = AES.new(key, AES.MODE_CBC, iv)
     filesize = os.path.getsize(filename)
-    
+
     with open(filename, 'rb') as input:
         with open(outfile, 'wb') as output:
             output.write(struct.pack('<Q', filesize))
             output.write(iv)
-            
+
             while True:
                 data = input.read(chunk)
                 if len(data) == 0:
                     break
-                
+
                 data = pad(data, len(key))
                 output.write(cipher.encrypt(data))
+
 
 def generateKey(password, bits=32):
     """
@@ -217,8 +204,11 @@ def generateKey(password, bits=32):
         hasher = hashlib.sha256
     elif bits == 16:
         hasher = hashlib.md5
-    
+    else:
+        raise StandardError('Invalid hash type')
+
     return hasher(password).digest()
+
 
 def generateToken(bits=32):
     """
@@ -228,9 +218,12 @@ def generateToken(bits=32):
     """
     if bits == 64:
         hasher = hashlib.sha256
-    if bits == 32:
+    elif bits == 32:
         hasher = hashlib.md5
+    else:
+        raise StandardError('Unknown bit level.')
     return hasher(nstr(random.getrandbits(256))).hexdigest()
+
 
 def pad(text, bits=32):
     """
@@ -244,6 +237,7 @@ def pad(text, bits=32):
     """
     return text + (bits - len(text) % bits) * chr(bits - len(text) % bits)
 
+
 def unpad(text):
     """
     Unpads the text from the given block size.
@@ -254,8 +248,9 @@ def unpad(text):
     """
     return text[0:-ord(text[-1])]
 
-
-# by default, just setting the encryption key as 'password'
+# applications that use encryption should define their own encryption key
+# and assign it to this value - this will need to be the same size as the
+# block size.  by default, just setting the encryption key as 'password'
 # THIS SHOULD BE RESET FOR YOUR APPLICATION
 ENCRYPT_KEY = generateKey('password')
 

@@ -17,23 +17,12 @@ slow loading modules and import cycles.
 
 """
 
-# define authorship information
-__authors__         = ['Eric Hulser']
-__author__          = ','.join(__authors__)
-__credits__         = []
-__copyright__       = 'Copyright (c) 2011, Projex Software'
-__license__         = 'LGPL'
-
-# maintanence information
-__maintainer__      = 'Projex Software'
-__email__           = 'team@projexsoftware.com'
-
 import logging
 import os
 import sys
-import traceback
 
 log = logging.getLogger(__name__)
+
 
 class LazyModule(object):
     def __dir__(self):

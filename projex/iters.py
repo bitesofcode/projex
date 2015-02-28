@@ -1,20 +1,9 @@
-#!/usr/bin/python
-
-""" 
+"""
 Defines iteration utilities
 """
 
-# define authorship information
-__authors__         = ['Eric Hulser']
-__author__          = ','.join(__authors__)
-__credits__         = []
-__copyright__       = 'Copyright (c) 2011, Projex Software'
-__license__         = 'LGPL'
-
-__maintainer__      = 'Projex Software'
-__email__           = 'team@projexsoftware.com'
-
 import itertools
+
 
 def batch(iterable, length):
     """
@@ -47,19 +36,18 @@ def batch(iterable, length):
         batch_iter = itertools.islice(source_iter, length)
         yield itertools.chain([batch_iter.next()], batch_iter)
 
+
 def group(iterable):
     """
     Creates a min/max grouping for the inputted list of numbers.  This
     will shrink a list into the group sets that are available.
     
-    :param      iterbale | <iternable> | (list, tuple, set, etc.)
+    :param      iterable | <iterable> | (list, tuple, set, etc.)
     
     :return     <generator> [(<int> min, <int> max), ..]
     """
     numbers = sorted(list(set(iterable)))
-    for _, grouper in itertools.groupby(numbers,
-                                        key=lambda i,
-                                        c=itertools.count(): i-next(c)):
+    for _, grouper in itertools.groupby(numbers, key=lambda i, c=itertools.count(): i - next(c)):
         subset = list(grouper)
         yield subset[0], subset[-1]
 

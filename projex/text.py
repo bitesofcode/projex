@@ -1,20 +1,6 @@
-#!/usr/bin/python
 # -*- coding=utf-8
 
 """ Defines a variety of useful string operators and methods. """
-
-# define authorship information
-__authors__         = ['Eric Hulser']
-__author__          = ','.join(__authors__)
-__credits__         = []
-__copyright__       = 'Copyright (c) 2011, Projex Software'
-__license__         = 'LGPL'
-
-# maintanence information
-__maintainer__      = 'Projex Software'
-__email__           = 'team@projexsoftware.com'
-
-#------------------------------------------------------------------------------
 
 import ast
 import datetime
@@ -30,6 +16,7 @@ try:
     import inflect
     inflect_engine = inflect.engine()
 except ImportError:
+    inflect = None
     inflect_engine = None
 
 # defines the different rules for pluralizing a word
@@ -47,45 +34,48 @@ CONSTANT_EVALS = {
 }
 
 COMMON_TERMS = set([
-'a', 'about', 'all', 'and', 'are', 'as', 'at',
-'be', 'but', 'by'
-'can', 'cannot','could',"couldn't",
-'do','did',"didn't",
-'for', 'from',
-'have', 'he', 'her', 'him', 'his', 'has',
-'i', 'if', 'in', 'is', 'it',
-'just',
-'like',
-'man','may','more','most','my',
-'no','not','now',
-'of','on','only','or','out','over',
-'say','see','she','should',"shouldn't",'so',
-'than','that','the','then','there','they','this','to',
-'was','way','we','were','what','when','which','who','will','with','would','wouldn',"won't",
-'you'
+    'a', 'about', 'all', 'and', 'are', 'as', 'at',
+    'be', 'but', 'by'
+                 'can', 'cannot', 'could', "couldn't",
+    'do', 'did', "didn't",
+    'for', 'from',
+    'have', 'he', 'her', 'him', 'his', 'has',
+    'i', 'if', 'in', 'is', 'it',
+    'just',
+    'like',
+    'man', 'may', 'more', 'most', 'my',
+    'no', 'not', 'now',
+    'of', 'on', 'only', 'or', 'out', 'over',
+    'say', 'see', 'she', 'should', "shouldn't", 'so',
+    'than', 'that', 'the', 'then', 'there', 'they', 'this', 'to',
+    'was', 'way', 'we', 'were', 'what', 'when', 'which', 'who', 'will', 'with', 'would', 'wouldn', "won't",
+    'you'
 ])
 
 DEFAULT_ENCODING = 'utf-8'
 SUPPORTED_ENCODINGS = list(sorted(set(aliases.values())))
 
 # precompile all expressions
-EXPR_UPPERCASE  = re.compile('^[A-Z]+$')
-EXPR_CAPITALS   = re.compile('^[A-Z0-9]+$')
-EXPR_PHRASE     = re.compile('[A-Za-z0-9]+')
-EXPR_WORD       = re.compile('^[^A-Z0-9]+|[A-Z0-9]+[^A-Z0-9]*')
+EXPR_UPPERCASE = re.compile('^[A-Z]+$')
+EXPR_CAPITALS = re.compile('^[A-Z0-9]+$')
+EXPR_PHRASE = re.compile('[A-Za-z0-9]+')
+EXPR_WORD = re.compile('^[^A-Z0-9]+|[A-Z0-9]+[^A-Z0-9]*')
 
 logger = logging.getLogger(__name__)
 
+
 class HTMLStripper(HTMLParser):
     def __init__(self):
+        HTMLParser.__init__(self)
         self.reset()
         self._raw = []
-    
+
     def handle_data(self, d):
         self._raw.append(d)
-    
+
     def text(self, joiner=''):
         return joiner.join(self._raw)
+
 
 STRING_TYPES = [
     'str',
@@ -103,9 +93,10 @@ else:
     unicode_type = unicode
     bytes_type = str
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 
-def camelHump( text ):
+
+def camelHump(text):
     """
     Converts the inputted text to camel humps by joining all
     capital letters toegether (The Quick, Brown, 
@@ -119,12 +110,13 @@ def camelHump( text ):
                 |print projex.text.camelHump('The,Quick, Brown, Fox.Tail')
     """
     # make sure the first letter is upper case
-    output = ''.join([word[0].upper() + word[1:] for word in words(text) ])
+    output = ''.join([word[0].upper() + word[1:] for word in words(text)])
     if output:
         output = output[0].lower() + output[1:]
     return output
 
-def capitalize( text ):
+
+def capitalize(text):
     """
     Capitalizes the word using the normal string capitalization 
     method, however if the word contains only capital letters and 
@@ -139,7 +131,8 @@ def capitalize( text ):
         return text
     return text.capitalize()
 
-def capitalizeWords( text ):
+
+def capitalizeWords(text):
     """
     Capitalizes all the words in the text.
     
@@ -149,7 +142,8 @@ def capitalizeWords( text ):
     """
     return ' '.join([capitalize(word) for word in words(text)])
 
-def classname( text ):
+
+def classname(text):
     """
     Converts the inputted text to the standard classname format (camel humped
     with a capital letter to start.
@@ -158,11 +152,12 @@ def classname( text ):
     """
     if not text:
         return text
-    
+
     text = camelHump(text)
     return text[0].upper() + text[1:]
 
-def dashed( text ):
+
+def dashed(text):
     """
     Splits all the words from the inputted text into being
     separated by dashes
@@ -178,6 +173,7 @@ def dashed( text ):
     """
     return joinWords(text, '-').lower()
 
+
 def encoded(text, encoding=DEFAULT_ENCODING):
     """
     Encodes the inputted unicode/string variable with the given encoding type.
@@ -190,7 +186,7 @@ def encoded(text, encoding=DEFAULT_ENCODING):
     # already a string item
     if type(text) == bytes_type:
         return text
-    
+
     elif type(text) != unicode_type:
         # convert a QString value
         if type(text).__name__ == 'QString':
@@ -202,28 +198,29 @@ def encoded(text, encoding=DEFAULT_ENCODING):
                 return unicode_type(text.toAscii(), 'ascii')
             else:
                 return unicode_type(text, encoding)
-        
+
         # convert a standard item
         else:
             try:
                 return bytes_type(text)
             except StandardError:
                 return '????'
-    
+
     if encoding:
         try:
             return text.encode(encoding)
         except StandardError:
             return text.encode(encoding, errors='ignore')
-    
+
     else:
         for enc in SUPPORTED_ENCODINGS:
             try:
                 return text.encode(enc)
             except StandardError:
                 pass
-    
+
     return '????'
+
 
 def decoded(text, encoding=DEFAULT_ENCODING):
     """
@@ -239,7 +236,7 @@ def decoded(text, encoding=DEFAULT_ENCODING):
     # unicode has already been decoded
     if type(text) == unicode_type:
         return text
-    
+
     elif type(text) != bytes_type:
         try:
             return unicode_type(text)
@@ -255,14 +252,15 @@ def decoded(text, encoding=DEFAULT_ENCODING):
             return text.decode(encoding)
         except StandardError:
             pass
-    
+
     for enc in SUPPORTED_ENCODINGS:
         try:
             return text.decode(enc)
         except StandardError:
             pass
-    
+
     return u'????'
+
 
 def findkeys(text):
     """
@@ -276,6 +274,7 @@ def findkeys(text):
     return map(lambda x: x[1], re.findall('(^|[^%])%\((\w+)\)\w',
                                           nativestring(text)))
 
+
 def isstring(item):
     """
     Returns whether or not the inputted item should be considered a string.
@@ -283,6 +282,7 @@ def isstring(item):
     :return     <bool>
     """
     return type(item).__name__ in STRING_TYPES
+
 
 def nativestring(val, encodings=None):
     """
@@ -298,17 +298,18 @@ def nativestring(val, encodings=None):
     # if it is already a native python string, don't do anything
     if type(val) in (bytes_type, unicode_type):
         return val
-    
+
     # otherwise, attempt to return a decoded value
     try:
         return unicode_type(val)
     except StandardError:
         pass
-    
+
     try:
         return bytes_type(val)
     except StandardError:
         return decoded(val)
+
 
 def joinWords(text, separator=''):
     """
@@ -325,27 +326,27 @@ def joinWords(text, separator=''):
     :usage      |import projex
                 |print projex.joinWords('This::is.a testTest','-')
     """
-    text    = nativestring(text)
-    output  = separator.join(words(text.strip(separator)))
-    
+    text = nativestring(text)
+    output = separator.join(words(text.strip(separator)))
+
     # no need to check for bookended items when its an empty string
-    if ( not separator ):
+    if not separator:
         return output
-        
+
     # look for beginning characters
-    begin   = re.match('^\%s+' % separator, text)
-    if ( begin ):
+    begin = re.match('^\%s+' % separator, text)
+    if begin:
         output = begin.group() + output
-        
+
         # make sure to not double up
-        if ( begin.group() == text ):
+        if begin.group() == text:
             return output
-            
+
     # otherwise, look for the ending results
-    end     = re.search('\%s+$' % separator, text)
-    if ( end ):
+    end = re.search('\%s+$' % separator, text)
+    if end:
         output += end.group()
-    
+
     return output
 
 
@@ -370,29 +371,30 @@ def pluralize(word, count=None, format=u'{word}'):
     word = nativestring(word)
     if inflect_engine:
         return format.format(word=inflect_engine.plural(word))
-    
-    all_upper = EXPR_UPPERCASE.match(word) != None
-    
+
+    all_upper = EXPR_UPPERCASE.match(word) is not None
+
     # go through the different plural expressions, searching for the
     # proper replacement
     for expr, plural in PLURAL_RULES:
         results = expr.match(word)
         if results:
             result_dict = results.groupdict()
-            single = result_dict.get('single','')
-            
+            single = result_dict.get('single', '')
+
             # check if its capitalized
             if all_upper:
                 return format.format(word=single + plural.upper())
             else:
                 return format.format(word=single + plural)
-    
+
     # by default, just include 's' at the end
     if all_upper:
         return format.format(word=word + 'S')
     return format.format(word=word + 's')
 
-def pretty( text ):
+
+def pretty(text):
     """
     Converts the inputted text to "pretty" text by turning camel
     humps and underscores/dashes to capitalized words. 
@@ -409,9 +411,10 @@ def pretty( text ):
                 |print projex.text.pretty('TheQuickBrownFox')
                 |print projex.text.pretty('the_quick_brown_fox')
     """
-    return ' '.join( [word.capitalize() for word in words(text)] )
+    return ' '.join([word.capitalize() for word in words(text)])
 
-def render( text, options, processed = None ):
+
+def render(text, options, processed=None):
     """
     Replaces the templates within the inputted text with the given
     options.  Templates are defined as text within matching 
@@ -448,143 +451,144 @@ def render( text, options, processed = None ):
                 rstrip(x)     | removes the ending instance of x
                 slice(x, y)   | same as doing string[x:y]
     """
-    output      = unicode_type(text)
-    expr        = re.compile( '(\[+([^\[\]]+)\]\]?)' )
-    results     = expr.findall( output )
-    curr_date   = datetime.datetime.now()
-    options_re  = re.compile('(\w+)\(?([^\)]+)?\)?')
-    
-    if ( processed == None ):
-        processed   = []
-    
+    output = unicode_type(text)
+    expr = re.compile('(\[+([^\[\]]+)\]\]?)')
+    results = expr.findall(output)
+    curr_date = datetime.datetime.now()
+    options_re = re.compile('(\w+)\(?([^\)]+)?\)?')
+
+    if processed is None:
+        processed = []
+
     for repl, key in results:
         # its possible to get multiple items for processing
-        if ( repl in processed ):
+        if repl in processed:
             continue
-        
+
         # record the repl value as being processed
         processed.append(repl)
-        
-        # replace templated templates
-        if ( repl.startswith('[[') and repl.endswith(']]') ):
-            output = output.replace( repl, '[%s]' % key )
+
+        # replace template templates
+        if repl.startswith('[[') and repl.endswith(']]'):
+            output = output.replace(repl, '[%s]' % key)
             continue
-        
+
         # determine the main key and its options
-        splt    = key.split('::')
-        key     = splt[0]
-        prefs   = splt[1:]
-        value   = None
-        
+        splt = key.split('::')
+        key = splt[0]
+        prefs = splt[1:]
+        value = None
+
         # use the inputted options
-        if ( key in options ):
+        if key in options:
             # extract the value
             value = options[key]
-            
+
             # format a float
-            if ( type(value) in (float, int) ):
-                if ( prefs ):
+            if type(value) in (float, int):
+                if prefs:
                     value = prefs[0] % value
                 else:
                     value = nativestring(value)
-            
+
             # convert date time values
-            elif ( type(value) in (datetime.datetime,
+            elif type(value) in (datetime.datetime,
                                  datetime.date,
-                                 datetime.time) ):
-                if ( not prefs ):
+                                 datetime.time):
+                if not prefs:
                     date_format = '%m/%d/%y'
                 else:
                     date_format = prefs[0]
                     prefs = prefs[1:]
-                
+
                 value = value.strftime(nativestring(date_format))
-            
+
             else:
                 value = render(options[key], options, processed)
-        
+
         # look for the built-in options
-        elif ( key == 'date' ):
+        elif key == 'date':
             value = curr_date
-            
-            if ( not prefs ):
+
+            if not prefs:
                 date_format = '%m/%d/%y'
             else:
                 date_format = prefs[0]
                 prefs = prefs[1:]
-            
+
             value = value.strftime(nativestring(date_format))
-        
+
         # otherwise, continue
         else:
             continue
-        
+
         # apply the prefs to the value
-        if ( value and prefs ):
-            
+        if value and prefs:
+
             for pref in prefs:
                 result = options_re.match(pref)
                 pref, opts = result.groups()
-                
-                if ( opts ):
+
+                if opts:
                     opts = [opt.strip() for opt in opts.split(',')]
                 else:
                     opts = []
-                
-                if ( 'lower' == pref ):
+
+                if 'lower' == pref:
                     value = value.lower()
-                elif ( 'upper' == pref ):
+                elif 'upper' == pref:
                     value = value.upper()
-                elif ( 'upper_first' == pref ):
+                elif 'upper_first' == pref:
                     value = value[0].upper() + value[1:]
-                elif ( 'lower_first' == pref ):
+                elif 'lower_first' == pref:
                     value = value[0].lower() + value[1:]
-                elif ( 'camelHump' == pref ):
+                elif 'camelHump' == pref:
                     value = camelHump(value)
-                elif ( 'underscore' == pref ):
+                elif 'underscore' == pref:
                     value = underscore(value)
-                elif ( 'capitalize' == pref ):
+                elif 'capitalize' == pref:
                     value = capitalize(value)
-                elif ( pref in ('pluralize', 'plural') ):
+                elif pref in ('pluralize', 'plural'):
                     value = pluralize(value)
-                elif ( 'words' == pref ):
+                elif 'words' == pref:
                     value = ' '.join(words(value))
-                elif ( 'pretty' == pref ):
+                elif 'pretty' == pref:
                     value = pretty(value)
-                
-                elif ( 'replace' == pref ):
-                    if ( len(opts) == 2 ):
+
+                elif 'replace' == pref:
+                    if len(opts) == 2:
                         value = value.replace(opts[0], opts[1])
                     else:
-                        logger.warning('Invalid options for replace: %s', 
-                                        ', '.join(opts))
-                
-                elif ( 'slice' == pref ):
-                    if ( len(opts) == 2 ):
+                        logger.warning('Invalid options for replace: %s',
+                                       ', '.join(opts))
+
+                elif 'slice' == pref:
+                    if len(opts) == 2:
                         value = value[int(opts[0]):int(opts[1])]
                     else:
                         logger.warning('Invalid options for slice: %s',
                                        ', '.join(opts))
-                
-                elif ( 'lstrip' == pref ):
-                    if ( not opts ):
+
+                elif 'lstrip' == pref:
+                    if not opts:
                         value = value.lstrip()
                     else:
-                        for key in opts:
-                            if ( value.startswith(key) ):
-                                value = value[len(key):]
-                    
-                elif ( 'rstrip' == pref ):
-                    if ( not opts ):
+                        for k in opts:
+                            if value.startswith(k):
+                                value = value[len(k):]
+
+                elif 'rstrip' == pref:
+                    if not opts:
                         value = value.rstrip()
                     else:
-                        for key in opts:
-                            if ( value.endswith(key) ):
-                                value = value[:-len(key)]
-                    
+                        for k in opts:
+                            if value.endswith(k):
+                                value = value[:-len(k)]
+
         output = output.replace(repl, value)
-    
+
     return output
+
 
 def safe_eval(value):
     """
@@ -619,7 +623,8 @@ def sectioned(text, sections=1):
     if not text:
         return ''
     count = len(text) / max(1, sections)
-    return ' '.join([text[i:i+count] for i in range(0, len(text), count)])
+    return ' '.join([text[i:i + count] for i in range(0, len(text), count)])
+
 
 def singularize(word):
     """
@@ -640,7 +645,7 @@ def singularize(word):
         if result is False:
             return word
         return result
-    
+
     # go through the different plural expressions, searching for the
     # proper replacement
     if word.endswith('ies'):
@@ -649,8 +654,9 @@ def singularize(word):
         return word[:-3] + 'Y'
     elif word.endswith('s') or word.endswith('S'):
         return word[:-1]
-    
+
     return word
+
 
 def stemmed(text):
     """
@@ -664,7 +670,7 @@ def stemmed(text):
     :return     [<str>, ..]
     """
     terms = re.split('\s*', toAscii(text))
-    
+
     output = []
     for term in terms:
         # ignore apostrophe's
@@ -672,21 +678,22 @@ def stemmed(text):
             stripped_term = term[:-2]
         else:
             stripped_term = term
-        
+
         single_term = singularize(stripped_term)
-        
-        if term in COMMON_TERMS or stripped_term in COMMON_TERMS or \
-           single_term in COMMON_TERMS:
+
+        if term in COMMON_TERMS or stripped_term in COMMON_TERMS or single_term in COMMON_TERMS:
             continue
-        
+
         output.append(single_term)
-    
+
     return output
+
 
 def stripHtml(html, joiner=''):
     """
     Strips out the HTML tags from the inputted text, returning the basic
-    text.  This algorightm was found on [http://stackoverflow.com/questions/753052/strip-html-from-strings-in-python StackOverflow].
+    text.  This algorightm was found on
+    [http://stackoverflow.com/questions/753052/strip-html-from-strings-in-python StackOverflow].
     
     :param      html | <str>
     
@@ -695,6 +702,7 @@ def stripHtml(html, joiner=''):
     stripper = HTMLStripper()
     stripper.feed(html.replace('<br>', '\n').replace('<br/>', '\n'))
     return stripper.text(joiner)
+
 
 def truncate(text, length=50, ellipsis='...'):
     """
@@ -709,6 +717,7 @@ def truncate(text, length=50, ellipsis='...'):
     text = nativestring(text)
     return text[:length] + (text[length:] and ellipsis)
 
+
 def toAscii(text):
     """
     Safely converts the inputted text to standard ASCII characters.
@@ -720,6 +729,7 @@ def toAscii(text):
     :return     <str>
     """
     return bytes_type(encoded(text, 'ascii'))
+
 
 def toBytes(text, encoding=DEFAULT_ENCODING):
     """
@@ -734,8 +744,9 @@ def toBytes(text, encoding=DEFAULT_ENCODING):
 
     if not isinstance(text, bytes_type):
         text = text.encode(encoding)
-    
+
     return text
+
 
 def toUnicode(data, encoding=DEFAULT_ENCODING):
     """
@@ -743,7 +754,7 @@ def toUnicode(data, encoding=DEFAULT_ENCODING):
     
     :param      data | <str> || <unicode> || <iterable>
     
-    :return     <unicoe> || <iterable>
+    :return     <unicode> || <iterable>
     """
     if isinstance(data, unicode_type):
         return data
@@ -761,10 +772,10 @@ def toUnicode(data, encoding=DEFAULT_ENCODING):
         else:
             if hasattr(data, 'items'):
                 data = data.items()
-            
-            return dict(((toUnicode(k, encoding), toUnicode(v, encoding)) \
-                          for k, v in data))
+
+            return dict(((toUnicode(k, encoding), toUnicode(v, encoding)) for k, v in data))
     return data
+
 
 def toUtf8(text):
     """
@@ -778,7 +789,8 @@ def toUtf8(text):
     """
     return encoded(text, 'utf-8')
 
-def underscore( text, lower = True ):
+
+def underscore(text, lower=True):
     """
     Splits all the words from the inputted text into being
     separated by underscores
@@ -792,30 +804,32 @@ def underscore( text, lower = True ):
     :usage      |import projex.text
                 |print projex.text.underscore('TheQuick, Brown, Fox')
     """
-    out = joinWords(text,'_')
+    out = joinWords(text, '_')
     if lower:
         return out.lower()
     return out
 
-def xmlindent( elem, level = 0, spacer = '  ' ):
+
+def xmlindent(elem, level=0, spacer='  '):
     """
     Indents the inputted XML element based on the given indent level.
     
     :param      elem    | <xml.etree.Element>
     """
-    i = "\n" + level*spacer
+    i = "\n" + level * spacer
     if len(elem):
         if not elem.text or not elem.text.strip():
             elem.text = i + spacer
         if not elem.tail or not elem.tail.strip():
             elem.tail = i
         for elem in elem:
-            xmlindent(elem, level+1)
+            xmlindent(elem, level + 1)
         if not elem.tail or not elem.tail.strip():
             elem.tail = i
     else:
         if level and (not elem.tail or not elem.tail.strip()):
             elem.tail = i
+
 
 def wordcount(text):
     """
@@ -825,7 +839,8 @@ def wordcount(text):
     """
     return len(re.findall('\w+', nativestring(text)))
 
-def words( text ):
+
+def words(text):
     """
     Extracts a list of words from the inputted text, parsing
     out non-alphanumeric characters and splitting camel 
@@ -841,13 +856,13 @@ def words( text ):
     stext = nativestring(text)
     if not stext:
         return []
-   
+
     # first, split all the alphanumeric characters up
     phrases = EXPR_PHRASE.findall(stext)
-    
+
     # second, split all the camel humped words
     output = []
     for phrase in phrases:
-        output += EXPR_WORD.findall( phrase )
-    
+        output += EXPR_WORD.findall(phrase)
+
     return output

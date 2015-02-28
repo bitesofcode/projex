@@ -3,18 +3,9 @@ Provides additional cross platform functionality to the existing
 python os module.
 """
 
-# define authorship information
-__authors__         = ['Eric Hulser', 'Michael Hale Ligh']
-__author__          = ','.join(__authors__)
-__credits__         = []
-__copyright__       = 'Copyright (c) 2011, Projex Software, LLC'
-__license__         = 'LGPL'
-
-__maintainer__      = 'Projex Software, LLC'
-__email__           = 'team@projexsoftware.com'
-
 import os
 import sys
+
 
 def appdataPath(appname):
     """

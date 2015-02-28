@@ -1,15 +1,4 @@
-""" Defines a file/folder templating architecture. """
-
-# define authorship information
-__authors__         = ['Eric Hulser']
-__author__          = ','.join(__authors__)
-__credits__         = []
-__copyright__       = 'Copyright (c) 2012, Projex Software'
-__license__         = 'GPL'
-
-# maintanence information
-__maintainer__      = 'Projex Software'
-__email__           = 'team@projexsoftware.com'
+""" Defines a file/folder template architecture. """
 
 import logging
 import os
@@ -26,7 +15,8 @@ from .text import nativestring as nstr
 
 logger = logging.getLogger(__name__)
 
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+
 
 class Property(object):
     def __init__(self, **kwds):
@@ -36,7 +26,7 @@ class Property(object):
         self.default = kwds.get('default', None)
         self.choices = kwds.get('choices', [])
         self.required = kwds.get('required', False)
-        self.regex = kwds.get('regex', None)
+        self.regex = kwds.get('regex', '')
         self.hidden = kwds.get('hidden', False)
         self.label = kwds.get('label', projex.text.pretty(self.name))
 
@@ -48,14 +38,14 @@ class Property(object):
         """
         if self.hidden:
             return True
-        
+
         cmd = [self.label]
-        
+
         if self.default is not None:
             cmd.append('(default: {0})'.format(self.default))
         elif not self.required:
             cmd.append('(default: )')
-        
+
         if self.type == 'bool':
             cmd.append('(y/n)')
 
@@ -65,11 +55,11 @@ class Property(object):
                 print choice
         if error:
             print error
-        
+
         value = raw_input(' '.join(cmd) + ':')
         if value == '':
             value = self.default
-        
+
         if self.type == 'bool':
             if value == 'y':
                 value = True
@@ -92,29 +82,30 @@ class Property(object):
     def fromXml(xprop):
         opts = xprop.attrib.copy()
         typ = opts.pop('type', 'str')
-        
+
         for key, value in opts.items():
             try:
                 value = eval(value)
-            except:
+            except StandardError:
                 pass
-            
+
             opts[key] = value
-        
+
         choices = []
         for xchoice in xprop:
             choices.append(xchoice.text)
-        
+
         opts['type'] = typ
         opts['choices'] = choices
         return Property(**opts)
+
 
 #----------------------------------------------------------------------
 
 class Template(object):
     GlobalOptions = {}
     Plugins = {}
-    
+
     def __init__(self, **kwds):
         self.name = kwds.get('name', '')
         self.text = ''
@@ -125,8 +116,9 @@ class Template(object):
         opts.update(Template.GlobalOptions)
         opts.update(self.options)
         opts.update(options)
-        
+
         return makotext.render(self.text, options)
+
 
 #----------------------------------------------------------------------
 
@@ -141,13 +133,13 @@ class Scaffold(object):
         self._properties = OrderedDict()
         self._templates = {}
 
-    def addProperty(self, property):
+    def addProperty(self, prop):
         """
         Adds a new property to this scaffold.
         
-        :param      property | <projex.scaffold.Property>
+        :param      prop | <projex.scaffold.Property>
         """
-        self._properties[property.name] = property
+        self._properties[prop.name] = prop
 
     def addTemplate(self, template):
         """
@@ -170,33 +162,34 @@ class Scaffold(object):
         """
         if not os.path.exists(outpath):
             return False
-        
+
         opts = {'scaffold': self}
-        
+
         if structure is not None:
             xstruct = structure
         else:
             xstruct = self.structure()
-        
+
         if zipfile.is_zipfile(self.source()):
             zfile = zipfile.ZipFile(self.source(), 'r')
         else:
             zfile = None
             base = os.path.dirname(self.source())
-        
+
         # build the structure information
+        # noinspection PyShadowingNames
         def build_level(root, xlevel):
             # ignore the entry
             if xlevel.get('enabled', 'True') == 'False':
                 return
-            
+
             # create a folder
             if xlevel.tag == 'folder':
                 name = makotext.render(xlevel.get('name'), opts)
                 dirname = os.path.join(root, name)
                 if not os.path.exists(dirname):
                     os.mkdir(dirname)
-                
+
                 for xchild in xlevel:
                     build_level(dirname, xchild)
 
@@ -204,7 +197,7 @@ class Scaffold(object):
             elif xlevel.tag == 'file':
                 name = makotext.render(xlevel.get('name'), opts)
                 fname = os.path.join(root, name)
-                
+
                 # create from a template
                 templ = xlevel.get('templ')
                 if templ:
@@ -213,20 +206,22 @@ class Scaffold(object):
                     else:
                         templ_path = os.path.join(base, 'templ', templ)
                         templ_str = open(templ_path, 'r').read()
-                    
+
                     rendered = makotext.render(templ_str, opts)
                     rendered = rendered.replace('\r\n', '\r')
-                    
+
                     f = open(fname, 'w')
                     f.write(rendered)
                     f.close()
-                
+
                 # create a blank file
                 else:
                     f = open(fname, 'w')
                     f.close()
 
-        for xlevel in xstruct: build_level(outpath, xlevel)
+        for xlevel in xstruct:
+            build_level(outpath, xlevel)
+
         if zfile:
             zfile.close()
         return True
@@ -396,7 +391,7 @@ class Scaffold(object):
         :return     <xml.etree.ElementTree.Element> || None
         """
         opts = {'scaffold': self}
-        
+
         # build from a zip file
         if zipfile.is_zipfile(self.source()):
             zfile = zipfile.ZipFile(self.source(), 'r')
@@ -405,11 +400,11 @@ class Scaffold(object):
                 contents = makotext.render(contents, opts)
                 zfile.close()
                 return ElementTree.fromstring(contents)
-            except:
+            except StandardError:
                 logger.exception('Failed to load structure.')
                 zfile.close()
                 return None
-        
+
         else:
             try:
                 filename = os.path.join(os.path.dirname(self.source()),
@@ -417,10 +412,9 @@ class Scaffold(object):
                 xdata = open(filename, 'r').read()
                 xdata = makotext.render(xdata, opts)
                 return ElementTree.fromstring(xdata)
-            except:
+            except StandardError:
                 logger.exception('Failed to load structure.')
                 return None
-
 
     def template(self, key):
         """
@@ -442,26 +436,26 @@ class Scaffold(object):
         :return     <str>
         """
         output = ''
-        
+
         # build from a zip file
         if zipfile.is_zipfile(self.source()):
             zfile = zipfile.ZipFile(self.source(), 'r')
             if 'properties.ui' in zfile.namelist():
                 tempdir = tempfile.gettempdir()
                 output = os.path.join(tempdir,
-                                     '{0}_properties.ui'.format(self.name()))
-                
+                                      '{0}_properties.ui'.format(self.name()))
+
                 f = open(output, 'w')
                 f.write(zfile.read('properties.ui'))
                 f.close()
             zfile.close()
-            
+
         else:
             uifile = os.path.join(os.path.dirname(self.source()),
-                                 'properties.ui')
+                                  'properties.ui')
             if os.path.exists(uifile):
                 output = uifile
-        
+
         return output
 
     @staticmethod
@@ -478,7 +472,7 @@ class Scaffold(object):
             zfile = zipfile.ZipFile(filename, 'r')
             try:
                 xml = ElementTree.fromstring(zfile.read('scaffold.xml'))
-            except:
+            except StandardError:
                 logger.exception('Failed to load scaffold: {0}'.format(filename))
                 zfile.close()
                 return None
@@ -488,7 +482,7 @@ class Scaffold(object):
         else:
             try:
                 xml = ElementTree.parse(filename).getroot()
-            except:
+            except StandardError:
                 logger.exception('Failed to load scaffold: {0}'.format(filename))
                 return None
 
@@ -499,7 +493,7 @@ class Scaffold(object):
         scaffold.setGroup(xml.get('group', 'Default'))
         scaffold.setLanguage(xml.get('lang', 'Python'))
         scaffold.setIcon(xml.get('icon', ''))
-        
+
         # define properties
         xprops = xml.find('properties')
         if xprops is not None:

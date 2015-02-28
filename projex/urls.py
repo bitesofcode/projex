@@ -1,15 +1,5 @@
 """ Defines common and useful methods for manipulating URLS. """
 
-# define authorship information
-__authors__         = ['Eric Hulser']
-__author__          = ','.join(__authors__)
-__credits__         = []
-__copyright__       = 'Copyright (c) 2011, Projex Software, LLC'
-__license__         = 'GPL'
-
-__maintainer__      = 'Projex Software, LLC'
-__email__           = 'team@projexsoftware.com'
-
 import projex.text
 import urllib
 import urlparse
@@ -17,7 +7,8 @@ import urlparse
 from .text import nativestring as nstr
 
 # B
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+
 
 def build(path, query=None, fragment=''):
     """
@@ -40,19 +31,19 @@ def build(path, query=None, fragment=''):
     :return     <str> | url
     """
     url = nstr(path)
-    
+
     # replace the optional arguments in the url
     keys = projex.text.findkeys(path)
     if keys:
         if query is None:
             query = {}
-        
+
         opts = {}
         for key in keys:
             opts[key] = query.pop(key, '%({})s'.format(key))
-        
+
         url %= opts
-    
+
     # add the query
     if query:
         if type(query) is dict:
@@ -62,14 +53,15 @@ def build(path, query=None, fragment=''):
             query_str = urllib.urlencode(mapped_query)
         else:
             query_str = nstr(query)
-        
+
         url += '?' + query_str
-    
+
     # include the fragment
     if fragment:
         url += '#' + fragment
-    
+
     return url
+
 
 # P
 #----------------------------------------------------------------------
@@ -84,23 +76,24 @@ def parse(url):
     :return     (<str> path, <dict> query, <str> fragment)
     """
     result = urlparse.urlparse(nstr(url))
-    
+
     path = result.scheme + '://' + result.netloc
     if result.path:
         path += result.path
-    
+
     query = {}
-    
+
     # extract the python information from the query
     if result.query:
         url_query = urlparse.parse_qs(result.query)
         for key, value in url_query.items():
             if type(value) == list and len(value) == 1:
                 value = value[0]
-            
+
             query[key] = value
-    
-    return (path, query, result.fragment)
+
+    return path, query, result.fragment
+
 
 # R
 #----------------------------------------------------------------------
