@@ -22,6 +22,7 @@ logger = logging.getLogger(__name__)
 # A
 # ------------------------------------------------------------------------------
 
+
 def abstractmethod(classname='', info=''):
     """
     Defines a particular method as being abstract.  Abstract methods are used \

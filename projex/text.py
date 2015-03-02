@@ -33,7 +33,7 @@ CONSTANT_EVALS = {
     'null': None
 }
 
-COMMON_TERMS = set([
+COMMON_TERMS = {
     'a', 'about', 'all', 'and', 'are', 'as', 'at',
     'be', 'but', 'by'
                  'can', 'cannot', 'could', "couldn't",
@@ -50,7 +50,7 @@ COMMON_TERMS = set([
     'than', 'that', 'the', 'then', 'there', 'they', 'this', 'to',
     'was', 'way', 'we', 'were', 'what', 'when', 'which', 'who', 'will', 'with', 'would', 'wouldn', "won't",
     'you'
-])
+}
 
 DEFAULT_ENCODING = 'utf-8'
 SUPPORTED_ENCODINGS = list(sorted(set(aliases.values())))

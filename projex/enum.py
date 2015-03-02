@@ -55,7 +55,7 @@ class enum(dict):
         if type(key) in (int, long):
             result = self.text(key)
             if not result:
-                raise KeyError, key
+                raise KeyError(key)
             return result
 
         # lookup the value for the inputted key

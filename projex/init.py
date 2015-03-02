@@ -213,9 +213,9 @@ def importmodules(package_or_toc, ignore=None, recurse=False, silent=None):
                 toc += data[0]
                 for sub_path in data[1]:
                     if sub_path in sys.path:
-                        sys.path.remove(path)
+                        sys.path.remove(sub_path)
 
-                    sys.path.insert(0, path)
+                    sys.path.insert(0, sub_path)
 
             setattr(package_or_toc, '__toc__', toc)
 
