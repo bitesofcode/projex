@@ -62,13 +62,16 @@ class AddonMixin(object):
         return out
 
     @classmethod
-    def byName(cls, name, recurse=True):
+    def byName(cls, name, recurse=True, default=None):
         """
         Returns the addon whose name matches the inputted name.  If
         the optional recurse flag is set to True, then all the base classes
-        will be searched for the given addon as well.
+        will be searched for the given addon as well. If no addon is found,
+        the default is returned.
         
-        :param      name | <str>
+        :param      name    | <str>
+                    recurse | <bool>
+                    default | <variant>
         """
         cls.initAddons()
         prop = '_{0}__addons'.format(cls.__name__)
@@ -79,7 +82,7 @@ class AddonMixin(object):
                 for base in cls.__bases__:
                     if issubclass(base, AddonManager):
                         return base.byName(name, recurse)
-        return None
+        return default
 
     @classmethod
     def initAddons(cls, recurse=True):
