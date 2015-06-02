@@ -28,6 +28,8 @@ class enum(dict):
                 |>>> TestType.keys()
                 |[1,2,4]
     """
+    def __json__(self):
+        return dict(self)
 
     def __call__(self, key):
         """
