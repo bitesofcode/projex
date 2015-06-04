@@ -130,7 +130,6 @@ class Builder(object):
             'logo': projex.resources.find('img/logo.ico'),
             'header_image': projex.resources.find('img/installer.bmp'),
             'finish_image': projex.resources.find('img/installer-side.bmp'),
-            'choose_dir': True
         }
 
         for k, v in opts.items():
@@ -138,6 +137,7 @@ class Builder(object):
 
         opts['cmd'] = r'$NSIS_EXE "{script}"'
         opts['require_license_approval'] = False
+        opts['choose_dir'] = True
 
         self._installName = ''
         self._installPath = ''
