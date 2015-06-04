@@ -18,7 +18,7 @@ __email__ = 'eric.hulser@gmail.com'
 # define version information (major,minor,maintenance)
 __major__ = 3
 __minor__ = 1
-__revision__ = 4
+__revision__ = 5
 
 __version_info__ = (__major__, __minor__, __revision__)
 __version__ = '{0}.{1}.{2}'.format(*__version_info__)

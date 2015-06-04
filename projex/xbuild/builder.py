@@ -129,7 +129,8 @@ class Builder(object):
         opts = {
             'logo': projex.resources.find('img/logo.ico'),
             'header_image': projex.resources.find('img/installer.bmp'),
-            'finish_image': projex.resources.find('img/installer-side.bmp')
+            'finish_image': projex.resources.find('img/installer-side.bmp'),
+            'choose_directoy': True
         }
 
         for k, v in opts.items():
@@ -657,6 +658,7 @@ class Builder(object):
         opts['uninstall_plugins'] = '\n'.join(uninstall_plugins)
         opts['pre_section_plugins'] = '\n'.join(pre_section_plugins)
         opts['post_section_plugins'] = '\n'.join(post_section_plugins)
+        opts['choose_directory'] = templ.NSISCHOOSEDIRECTORY if opts['choose_directory'] else ''
 
         req_license = self._installerOptions.pop('require_license_approval', False)
         if req_license:

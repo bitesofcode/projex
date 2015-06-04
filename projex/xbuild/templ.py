@@ -21,6 +21,8 @@ NSISPACKAGE = """
     File /nonfatal {buildpath}\\{product}.xdk
 """
 
+NSISCHOOSEDIRECTORY = "!insertmacro MUI_PAGE_DIRECTORY"
+
 NSISMODULE = """
     ; install the product
     SetOutPath '$INSTDIR'
@@ -68,7 +70,7 @@ RequestExecutionLevel admin
 
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_LICENSE 'license.txt'
-!insertmacro MUI_PAGE_DIRECTORY
+{choose_directory}
 !insertmacro MUI_PAGE_INSTFILES
 
 !insertmacro MUI_LANGUAGE '{language}'
@@ -181,7 +183,7 @@ RequestExecutionLevel admin
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_LICENSE 'license.txt'
 !insertmacro MUI_PAGE_STARTMENU Application $StartMenuFolder
-!insertmacro MUI_PAGE_DIRECTORY
+{choose_directory}
 !insertmacro MUI_PAGE_INSTFILES
 !insertmacro MUI_PAGE_FINISH
 
