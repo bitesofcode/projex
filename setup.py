@@ -57,16 +57,17 @@ setup(
     author_email='eric.hulser@gmail.com',
     maintainer='Eric Hulser',
     maintainer_email='eric.hulser@gmail.com',
-    description='Database ORM and API builder.',
+    description='Library of useful utilities for Python.',
     license='LGPL',
     keywords='',
     url='https://github.com/ProjexSoftware/projex',
     include_package_data=True,
+    scripts=[os.path.join('projex', 'scripts', 'xbuild.py')],
     packages=find_packages(),
     cmdclass={
         'tag': tag
     },
     tests_require=[],
-    long_description='Database ORM and API builder.',
+    long_description='Library of useful utilities for Python.',
     classifiers=[],
 )
