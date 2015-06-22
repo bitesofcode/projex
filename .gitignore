@@ -12,3 +12,4 @@ projex.egg-info
 .datc899.04f
 build
 dist
+_version.py
