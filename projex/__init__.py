@@ -15,10 +15,14 @@ __license__ = 'LGPL'
 __maintainer__ = 'Eric Hulser'
 __email__ = 'eric.hulser@gmail.com'
 
-# define version information (major,minor,maintenance)
-__major__ = 3
-__minor__ = 1
-__revision__ = 5
+# auto-generated version file from releasing
+try:
+    from ._version import __major__, __minor__, __revision__, __hash__
+except ImportError:
+    __major__ = 0
+    __minor__ = 0
+    __revision__ = 0
+    __hash__ = ''
 
 __version_info__ = (__major__, __minor__, __revision__)
 __version__ = '{0}.{1}.{2}'.format(*__version_info__)
