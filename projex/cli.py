@@ -143,12 +143,7 @@ class climethod(object):
         func_args = args[args.index(self.__name__) + 1:]
         func_kwds = opts.__dict__
 
-        try:
-            return self.__call__(*func_args, **func_kwds)
-
-        except TypeError, e:
-            logger.error(e)
-            return 1
+        return self.__call__(*func_args, **func_kwds)
 
 
 # ----------------------------------------------------------------------
