@@ -105,7 +105,8 @@ def render(text,
            options=None,
            templatePaths=None,
            default=None,
-           silent=False):
+           silent=False,
+           raiseErrors=False):
     """
     Renders a template text to a resolved text value using the mako template
     system.
@@ -175,6 +176,8 @@ def render(text,
     try:
         output = templ.render(**scope)
     except StandardError:
+        if raiseErrors:
+            raise
         output = text if default is None else default
         if not silent:
             logger.exception('Error rendering mako text')
