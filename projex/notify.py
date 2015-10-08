@@ -110,7 +110,8 @@ def sendEmail(sender,
               contentType='text/html',
               server=None,
               useMSExchange=None,
-              encoding='utf-8'):
+              encoding='utf-8',
+              raiseErrors=False):
     """
     Sends an email from the inputted email address to the
     list of given recipients with the inputted subject and
@@ -232,9 +233,13 @@ def sendEmail(sender,
         smtp_server = smtplib.SMTP(nstr(server))
     except socket.gaierror, err:
         logger.error(err)
+        if raiseErrors:
+            raise
         return False
     except Exception, err:
         logger.error(err)
+        if raiseErrors:
+            raise
         return False
 
     # connect to a microsoft exchange server if specified
@@ -248,6 +253,8 @@ def sendEmail(sender,
         smtp_server.close()
     except Exception, err:
         logger.error(err)
+        if raiseErrors:
+            raise
         return False
 
     return True
