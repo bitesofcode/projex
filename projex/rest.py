@@ -103,7 +103,11 @@ def py2json(py_obj):
     
     :param      py_obj | <variant>
     """
-    if type(py_obj) == datetime.datetime:
+    method = getattr(py_obj, '__json__', None)
+
+    if method:
+        return method()
+    elif type(py_obj) == datetime.datetime:
         return py_obj.isoformat()
     elif type(py_obj) == datetime.date:
         return py_obj.isoformat()
