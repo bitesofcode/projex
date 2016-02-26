@@ -41,7 +41,10 @@ class enum(dict):
         
         :return     <int> || <str>
         """
-        return self[key]
+        if isinstance(key, set):
+            return self.fromSet(key)
+        else:
+            return self[key]
 
     def __getitem__(self, key):
         """
@@ -182,6 +185,19 @@ class enum(dict):
         """
         new_val = self.add(key, value)
         self._bases[new_val] = base
+
+    def fromSet(self, values):
+        """
+        Generates a flag value based on the given set of values.
+
+        :param values: <set>
+
+        :return: <int>
+        """
+        value = 0
+        for flag in values:
+            value |= self(flag)
+        return value
 
     def label(self, value):
         """
