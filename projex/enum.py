@@ -226,7 +226,7 @@ class enum(dict):
         :param      value | <variant>
                     label | <str>
         """
-        if value:
+        if label:
             self._labels[value] = label
         else:
             self._labels.pop(value, None)
