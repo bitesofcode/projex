@@ -58,7 +58,7 @@ setup(
     maintainer='Eric Hulser',
     maintainer_email='eric.hulser@gmail.com',
     description='Library of useful utilities for Python.',
-    license='LGPL',
+    license='MIT',
     keywords='',
     url='https://github.com/ProjexSoftware/projex',
     include_package_data=True,
