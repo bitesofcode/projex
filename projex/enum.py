@@ -242,6 +242,16 @@ class enum(dict):
                 return key
         return default
 
+    def toSet(self, flags):
+        """
+        Generates a flag value based on the given set of values.
+
+        :param values: <set>
+
+        :return: <int>
+        """
+        return {key for key, value in self.items() if value & flags}
+
     def valueByLabel(self, label):
         """
         Determine a given value based on the inputted label.

@@ -62,6 +62,10 @@ class AddonMixin(object):
         return out
 
     @classmethod
+    def addonName(cls):
+        return getattr(cls, '_{0}__addonName'.format(cls.__name__), '')
+
+    @classmethod
     def byName(cls, name, recurse=True, default=None):
         """
         Returns the addon whose name matches the inputted name.  If
@@ -116,6 +120,12 @@ class AddonMixin(object):
             raise errors.AddonAlreadyExists(cls, name, addon)
 
         cmds[name] = addon
+        try:
+            if issubclass(addon, cls):
+                setattr(addon, '_{0}__addonName'.format(addon.__name__), name)
+        except StandardError:
+            pass
+
         setattr(cls, prop, cmds)
 
     @classmethod
