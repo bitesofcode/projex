@@ -4,6 +4,7 @@ specifically helpers for converting between Python and JSON formats.
 """
 
 import datetime
+import decimal
 import logging
 import re
 import projex.text
@@ -115,6 +116,8 @@ def py2json(py_obj):
         return py_obj.isoformat()
     elif type(py_obj) == set:
         return list(py_obj)
+    elif type(py_obj) == decimal.Decimal:
+        return str(py_obj)
     else:
         # look through custom plugins
         for encoder in _encoders:
